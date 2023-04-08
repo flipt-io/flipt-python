@@ -16,7 +16,9 @@ from .types.constraint_comparison_type import constraintComparisonType
 
 
 class ConstraintsClient:
-    def __init__(self, *, environment: FliptApiEnvironment, token: typing.Optional[str] = None):
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
         self._environment = environment
         self._token = token
 
@@ -31,7 +33,7 @@ class ConstraintsClient:
     ) -> constraint:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/segments/{segment_key}/constraints"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints"),
             json=jsonable_encoder({"type": type, "property": property, "operator": operator, "value": value}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -48,7 +50,7 @@ class ConstraintsClient:
     def delete(self, segment_key: str, id: str) -> None:
         _response = httpx.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -73,12 +75,90 @@ class ConstraintsClient:
     ) -> None:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
             json=jsonable_encoder({"type": type, "property": property, "operator": operator, "value": value}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
         )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+
+class AsyncConstraintsClient:
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
+        self._environment = environment
+        self._token = token
+
+    async def create(
+        self,
+        segment_key: str,
+        *,
+        type: constraintComparisonType,
+        property: str,
+        operator: str,
+        value: typing.Optional[str] = None,
+    ) -> constraint:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "POST",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints"),
+                json=jsonable_encoder({"type": type, "property": property, "operator": operator, "value": value}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(constraint, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def delete(self, segment_key: str, id: str) -> None:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "DELETE",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def update(
+        self,
+        segment_key: str,
+        id: str,
+        *,
+        type: constraintComparisonType,
+        property: str,
+        operator: str,
+        value: typing.Optional[str] = None,
+    ) -> None:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "PUT",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
+                json=jsonable_encoder({"type": type, "property": property, "operator": operator, "value": value}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
         if 200 <= _response.status_code < 300:
             return
         try:

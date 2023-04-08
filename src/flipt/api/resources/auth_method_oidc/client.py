@@ -15,14 +15,16 @@ from .types.oidc_callback_response import oidcCallbackResponse
 
 
 class AuthMethodOidcClient:
-    def __init__(self, *, environment: FliptApiEnvironment, token: typing.Optional[str] = None):
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
         self._environment = environment
         self._token = token
 
     def authorize_url(self, provider: str, *, state: str) -> oidcAuthorizeURLResponse:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"auth/v1/method/oidc/{provider}/authorize"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/method/oidc/{provider}/authorize"),
             params={"state": state},
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -39,12 +41,56 @@ class AuthMethodOidcClient:
     def callback(self, provider: str, *, code: str, state: str) -> oidcCallbackResponse:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"auth/v1/method/oidc/{provider}/callback"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/method/oidc/{provider}/callback"),
             params={"code": code, "state": state},
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
         )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(oidcCallbackResponse, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+
+class AsyncAuthMethodOidcClient:
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
+        self._environment = environment
+        self._token = token
+
+    async def authorize_url(self, provider: str, *, state: str) -> oidcAuthorizeURLResponse:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/method/oidc/{provider}/authorize"),
+                params={"state": state},
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(oidcAuthorizeURLResponse, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def callback(self, provider: str, *, code: str, state: str) -> oidcCallbackResponse:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/method/oidc/{provider}/callback"),
+                params={"code": code, "state": state},
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(oidcCallbackResponse, _response.json())  # type: ignore
         try:

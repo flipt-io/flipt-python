@@ -17,14 +17,16 @@ from .types.authentication_list import authenticationList
 
 
 class AuthClient:
-    def __init__(self, *, environment: FliptApiEnvironment, token: typing.Optional[str] = None):
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
         self._environment = environment
         self._token = token
 
     def list_tokens(self) -> authenticationList:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "auth/v1/tokens"),
+            urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/tokens"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -40,7 +42,7 @@ class AuthClient:
     def get_token(self, id: str) -> authentication:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"auth/v1/tokens/{id}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/tokens/{id}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -56,7 +58,7 @@ class AuthClient:
     def delete_token(self, id: str) -> None:
         _response = httpx.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment}/", f"auth/v1/tokens/{id}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/tokens/{id}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -72,7 +74,7 @@ class AuthClient:
     def get_self(self) -> authentication:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "auth/v1/self"),
+            urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -88,12 +90,106 @@ class AuthClient:
     def expire_self(self, *, expires_at: typing.Optional[dt.datetime] = None) -> None:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment}/", "auth/v1/self/expire"),
+            urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self/expire"),
             json=jsonable_encoder({"expiresAt": expires_at}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
         )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+
+class AsyncAuthClient:
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
+        self._environment = environment
+        self._token = token
+
+    async def list_tokens(self) -> authenticationList:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/tokens"),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(authenticationList, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_token(self, id: str) -> authentication:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/tokens/{id}"),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(authentication, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def delete_token(self, id: str) -> None:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "DELETE",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/tokens/{id}"),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_self(self) -> authentication:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self"),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(authentication, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def expire_self(self, *, expires_at: typing.Optional[dt.datetime] = None) -> None:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "PUT",
+                urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self/expire"),
+                json=jsonable_encoder({"expiresAt": expires_at}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
         if 200 <= _response.status_code < 300:
             return
         try:

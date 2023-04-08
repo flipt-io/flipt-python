@@ -16,7 +16,9 @@ from .types.rule_list import ruleList
 
 
 class RulesClient:
-    def __init__(self, *, environment: FliptApiEnvironment, token: typing.Optional[str] = None):
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
         self._environment = environment
         self._token = token
 
@@ -30,7 +32,7 @@ class RulesClient:
     ) -> ruleList:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/rules"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules"),
             params={"limit": limit, "offset": offset, "pageToken": page_token},
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -47,7 +49,7 @@ class RulesClient:
     def create(self, flag_key: str, *, segment_key: str, rank: int) -> rule:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/rules"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules"),
             json=jsonable_encoder({"segmentKey": segment_key, "rank": rank}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -64,7 +66,7 @@ class RulesClient:
     def order(self, flag_key: str, *, rule_ids: typing.List[str]) -> None:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/rules/order"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/order"),
             json=jsonable_encoder({"ruleIds": rule_ids}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -81,7 +83,7 @@ class RulesClient:
     def get(self, flag_key: str, id: str) -> rule:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -97,7 +99,7 @@ class RulesClient:
     def delete(self, flag_key: str, id: str) -> None:
         _response = httpx.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -113,12 +115,133 @@ class RulesClient:
     def update(self, flag_key: str, id: str, *, segment_key: str) -> None:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
             json=jsonable_encoder({"segmentKey": segment_key}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
         )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+
+class AsyncRulesClient:
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
+        self._environment = environment
+        self._token = token
+
+    async def list(
+        self,
+        flag_key: str,
+        *,
+        limit: typing.Optional[int] = None,
+        offset: typing.Optional[int] = None,
+        page_token: typing.Optional[str] = None,
+    ) -> ruleList:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules"),
+                params={"limit": limit, "offset": offset, "pageToken": page_token},
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(ruleList, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def create(self, flag_key: str, *, segment_key: str, rank: int) -> rule:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "POST",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules"),
+                json=jsonable_encoder({"segmentKey": segment_key, "rank": rank}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(rule, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def order(self, flag_key: str, *, rule_ids: typing.List[str]) -> None:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "PUT",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/order"),
+                json=jsonable_encoder({"ruleIds": rule_ids}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get(self, flag_key: str, id: str) -> rule:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(rule, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def delete(self, flag_key: str, id: str) -> None:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "DELETE",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def update(self, flag_key: str, id: str, *, segment_key: str) -> None:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "PUT",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+                json=jsonable_encoder({"segmentKey": segment_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
         if 200 <= _response.status_code < 300:
             return
         try:

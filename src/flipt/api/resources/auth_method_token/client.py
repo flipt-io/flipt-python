@@ -16,7 +16,9 @@ from ..auth.types.authentication_token import authenticationToken
 
 
 class AuthMethodTokenClient:
-    def __init__(self, *, environment: FliptApiEnvironment, token: typing.Optional[str] = None):
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
         self._environment = environment
         self._token = token
 
@@ -25,12 +27,40 @@ class AuthMethodTokenClient:
     ) -> authenticationToken:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "auth/v1/method/token"),
+            urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/method/token"),
             json=jsonable_encoder({"name": name, "description": description, "expiresAt": expires_at}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
         )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(authenticationToken, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+
+class AsyncAuthMethodTokenClient:
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
+        self._environment = environment
+        self._token = token
+
+    async def create_token(
+        self, *, name: str, description: str, expires_at: typing.Optional[dt.datetime] = None
+    ) -> authenticationToken:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "POST",
+                urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/method/token"),
+                json=jsonable_encoder({"name": name, "description": description, "expiresAt": expires_at}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(authenticationToken, _response.json())  # type: ignore
         try:

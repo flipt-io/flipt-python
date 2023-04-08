@@ -5,21 +5,23 @@ import typing
 from backports.cached_property import cached_property
 
 from ..environment import FliptApiEnvironment
-from .resources.auth.client import AuthClient
-from .resources.auth_method_k_8_s.client import AuthMethodK8SClient
-from .resources.auth_method_oidc.client import AuthMethodOidcClient
-from .resources.auth_method_token.client import AuthMethodTokenClient
-from .resources.constraints.client import ConstraintsClient
-from .resources.distributions.client import DistributionsClient
-from .resources.evaluate.client import EvaluateClient
-from .resources.flags.client import FlagsClient
-from .resources.rules.client import RulesClient
-from .resources.segments.client import SegmentsClient
-from .resources.variants.client import VariantsClient
+from .resources.auth.client import AsyncAuthClient, AuthClient
+from .resources.auth_method_k_8_s.client import AsyncAuthMethodK8SClient, AuthMethodK8SClient
+from .resources.auth_method_oidc.client import AsyncAuthMethodOidcClient, AuthMethodOidcClient
+from .resources.auth_method_token.client import AsyncAuthMethodTokenClient, AuthMethodTokenClient
+from .resources.constraints.client import AsyncConstraintsClient, ConstraintsClient
+from .resources.distributions.client import AsyncDistributionsClient, DistributionsClient
+from .resources.evaluate.client import AsyncEvaluateClient, EvaluateClient
+from .resources.flags.client import AsyncFlagsClient, FlagsClient
+from .resources.rules.client import AsyncRulesClient, RulesClient
+from .resources.segments.client import AsyncSegmentsClient, SegmentsClient
+from .resources.variants.client import AsyncVariantsClient, VariantsClient
 
 
 class FliptApi:
-    def __init__(self, *, environment: FliptApiEnvironment, token: typing.Optional[str] = None):
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
         self._environment = environment
         self._token = token
 
@@ -66,3 +68,55 @@ class FliptApi:
     @cached_property
     def variants(self) -> VariantsClient:
         return VariantsClient(environment=self._environment, token=self._token)
+
+
+class AsyncFliptApi:
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
+        self._environment = environment
+        self._token = token
+
+    @cached_property
+    def auth_method_k_8_s(self) -> AsyncAuthMethodK8SClient:
+        return AsyncAuthMethodK8SClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def auth_method_oidc(self) -> AsyncAuthMethodOidcClient:
+        return AsyncAuthMethodOidcClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def auth_method_token(self) -> AsyncAuthMethodTokenClient:
+        return AsyncAuthMethodTokenClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def auth(self) -> AsyncAuthClient:
+        return AsyncAuthClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def constraints(self) -> AsyncConstraintsClient:
+        return AsyncConstraintsClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def distributions(self) -> AsyncDistributionsClient:
+        return AsyncDistributionsClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def evaluate(self) -> AsyncEvaluateClient:
+        return AsyncEvaluateClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def flags(self) -> AsyncFlagsClient:
+        return AsyncFlagsClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def rules(self) -> AsyncRulesClient:
+        return AsyncRulesClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def segments(self) -> AsyncSegmentsClient:
+        return AsyncSegmentsClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def variants(self) -> AsyncVariantsClient:
+        return AsyncVariantsClient(environment=self._environment, token=self._token)

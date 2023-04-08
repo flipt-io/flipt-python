@@ -15,14 +15,18 @@ from .types.distribution import distribution
 
 
 class DistributionsClient:
-    def __init__(self, *, environment: FliptApiEnvironment, token: typing.Optional[str] = None):
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
         self._environment = environment
         self._token = token
 
     def create(self, flag_key: str, rule_id: str, *, variant_id: str, rollout: float) -> distribution:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/rules/{rule_id}/distributions"),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{rule_id}/distributions"
+            ),
             json=jsonable_encoder({"variantId": variant_id, "rollout": rollout}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -40,7 +44,7 @@ class DistributionsClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(
-                f"{self._environment}/", f"api/v1/flags/{flag_key}/rules/{rule_id}/distributions/{id}"
+                f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{rule_id}/distributions/{id}"
             ),
             params={"variantId": variant_id},
             headers=remove_none_from_headers(
@@ -59,13 +63,81 @@ class DistributionsClient:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(
-                f"{self._environment}/", f"api/v1/flags/{flag_key}/rules/{rule_id}/distributions/{id}"
+                f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{rule_id}/distributions/{id}"
             ),
             json=jsonable_encoder({"variantId": variant_id, "rollout": rollout}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
         )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+
+class AsyncDistributionsClient:
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
+        self._environment = environment
+        self._token = token
+
+    async def create(self, flag_key: str, rule_id: str, *, variant_id: str, rollout: float) -> distribution:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "POST",
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{rule_id}/distributions"
+                ),
+                json=jsonable_encoder({"variantId": variant_id, "rollout": rollout}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def delete(self, flag_key: str, rule_id: str, id: str, *, variant_id: str) -> None:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "DELETE",
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{rule_id}/distributions/{id}"
+                ),
+                params={"variantId": variant_id},
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def update(self, flag_key: str, rule_id: str, id: str, *, variant_id: str, rollout: float) -> distribution:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "PUT",
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{rule_id}/distributions/{id}"
+                ),
+                json=jsonable_encoder({"variantId": variant_id, "rollout": rollout}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
         try:

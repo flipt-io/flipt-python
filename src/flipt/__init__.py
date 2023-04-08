@@ -36,8 +36,10 @@ from .api import (
     variant,
     variants,
 )
+from .environment import FliptApiEnvironment
 
 __all__ = [
+    "FliptApiEnvironment",
     "Pageable",
     "auth",
     "auth_method_k_8_s",

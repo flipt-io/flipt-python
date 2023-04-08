@@ -15,7 +15,9 @@ from .types.variant import variant
 
 
 class VariantsClient:
-    def __init__(self, *, environment: FliptApiEnvironment, token: typing.Optional[str] = None):
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
         self._environment = environment
         self._token = token
 
@@ -30,7 +32,7 @@ class VariantsClient:
     ) -> variant:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/variants"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants"),
             json=jsonable_encoder({"key": key, "name": name, "description": description, "attachment": attachment}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -47,7 +49,7 @@ class VariantsClient:
     def delete(self, flag_key: str, id: str) -> None:
         _response = httpx.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/variants/{id}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants/{id}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -72,12 +74,90 @@ class VariantsClient:
     ) -> variant:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/flags/{flag_key}/variants/{id}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants/{id}"),
             json=jsonable_encoder({"key": key, "name": name, "description": description, "attachment": attachment}),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
         )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+
+class AsyncVariantsClient:
+    def __init__(
+        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+    ):
+        self._environment = environment
+        self._token = token
+
+    async def create(
+        self,
+        flag_key: str,
+        *,
+        key: str,
+        name: typing.Optional[str] = None,
+        description: typing.Optional[str] = None,
+        attachment: typing.Optional[str] = None,
+    ) -> variant:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "POST",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants"),
+                json=jsonable_encoder({"key": key, "name": name, "description": description, "attachment": attachment}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def delete(self, flag_key: str, id: str) -> None:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "DELETE",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants/{id}"),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def update(
+        self,
+        flag_key: str,
+        id: str,
+        *,
+        key: str,
+        name: typing.Optional[str] = None,
+        description: typing.Optional[str] = None,
+        attachment: typing.Optional[str] = None,
+    ) -> variant:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "PUT",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants/{id}"),
+                json=jsonable_encoder({"key": key, "name": name, "description": description, "attachment": attachment}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+            )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
         try:
