@@ -4,7 +4,7 @@ import typing
 
 from backports.cached_property import cached_property
 
-from ..environment import FliptApiEnvironment
+from .environment import FliptApiEnvironment
 from .resources.auth.client import AsyncAuthClient, AuthClient
 from .resources.auth_method_k_8_s.client import AsyncAuthMethodK8SClient, AuthMethodK8SClient
 from .resources.auth_method_oidc.client import AsyncAuthMethodOidcClient, AuthMethodOidcClient

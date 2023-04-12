@@ -7,30 +7,27 @@ from json.decoder import JSONDecodeError
 import httpx
 import pydantic
 
-from ....environment import FliptApiEnvironment
 from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
-from .types.distribution import distribution
-from .types.distribution_create_request import distributionCreateRequest
-from .types.distribution_update_request import distributionUpdateRequest
+from ...environment import FliptApiEnvironment
+from .types.constraint import constraint
+from .types.constraint_create_request import constraintCreateRequest
+from .types.constraint_update_request import constraintUpdateRequest
 
 
-class DistributionsClient:
+class ConstraintsClient:
     def __init__(
         self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
     ):
         self._environment = environment
         self._token = token
 
-    def create(
-        self, namespace_key: str, flag_key: str, rule_id: str, *, request: distributionCreateRequest
-    ) -> distribution:
+    def create(self, namespace_key: str, segment_key: str, *, request: constraintCreateRequest) -> constraint:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(
-                f"{self._environment.value}/",
-                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions",
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints"
             ),
             json=jsonable_encoder(request),
             headers=remove_none_from_headers(
@@ -38,21 +35,20 @@ class DistributionsClient:
             ),
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(constraint, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, variant_id: str) -> None:
+    def delete(self, namespace_key: str, segment_key: str, id: str) -> None:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(
                 f"{self._environment.value}/",
-                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions/{id}",
+                f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints/{id}",
             ),
-            params={"variantId": variant_id},
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -65,14 +61,12 @@ class DistributionsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(
-        self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, request: distributionUpdateRequest
-    ) -> distribution:
+    def update(self, namespace_key: str, segment_key: str, id: str, *, request: constraintUpdateRequest) -> None:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(
                 f"{self._environment.value}/",
-                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions/{id}",
+                f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints/{id}",
             ),
             json=jsonable_encoder(request),
             headers=remove_none_from_headers(
@@ -80,7 +74,7 @@ class DistributionsClient:
             ),
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+            return
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -88,22 +82,20 @@ class DistributionsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncDistributionsClient:
+class AsyncConstraintsClient:
     def __init__(
         self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
     ):
         self._environment = environment
         self._token = token
 
-    async def create(
-        self, namespace_key: str, flag_key: str, rule_id: str, *, request: distributionCreateRequest
-    ) -> distribution:
+    async def create(self, namespace_key: str, segment_key: str, *, request: constraintCreateRequest) -> constraint:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
                 urllib.parse.urljoin(
                     f"{self._environment.value}/",
-                    f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions",
+                    f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints",
                 ),
                 json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
@@ -111,22 +103,21 @@ class AsyncDistributionsClient:
                 ),
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(constraint, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, variant_id: str) -> None:
+    async def delete(self, namespace_key: str, segment_key: str, id: str) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(
                     f"{self._environment.value}/",
-                    f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions/{id}",
+                    f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints/{id}",
                 ),
-                params={"variantId": variant_id},
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -139,15 +130,13 @@ class AsyncDistributionsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(
-        self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, request: distributionUpdateRequest
-    ) -> distribution:
+    async def update(self, namespace_key: str, segment_key: str, id: str, *, request: constraintUpdateRequest) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
                 urllib.parse.urljoin(
                     f"{self._environment.value}/",
-                    f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions/{id}",
+                    f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints/{id}",
                 ),
                 json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
@@ -155,7 +144,7 @@ class AsyncDistributionsClient:
                 ),
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+            return
         try:
             _response_json = _response.json()
         except JSONDecodeError:

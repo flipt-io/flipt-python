@@ -7,51 +7,48 @@ from json.decoder import JSONDecodeError
 import httpx
 import pydantic
 
-from ....environment import FliptApiEnvironment
 from ...core.api_error import ApiError
-from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
-from .types.batch_evaluation_request import batchEvaluationRequest
-from .types.batch_evaluation_response import batchEvaluationResponse
-from .types.evaluation_request import evaluationRequest
-from .types.evaluation_response import evaluationResponse
+from ...environment import FliptApiEnvironment
+from .types.oidc_authorize_url_response import oidcAuthorizeURLResponse
+from .types.oidc_callback_response import oidcCallbackResponse
 
 
-class EvaluateClient:
+class AuthMethodOidcClient:
     def __init__(
         self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
     ):
         self._environment = environment
         self._token = token
 
-    def evaluate(self, namespace_key: str, *, request: evaluationRequest) -> evaluationResponse:
+    def authorize_url(self, provider: str, *, state: str) -> oidcAuthorizeURLResponse:
         _response = httpx.request(
-            "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/evaluate"),
-            json=jsonable_encoder(request),
+            "GET",
+            urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/method/oidc/{provider}/authorize"),
+            params={"state": state},
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(evaluationResponse, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(oidcAuthorizeURLResponse, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def batch_evaluate(self, namespace_key: str, *, request: batchEvaluationRequest) -> batchEvaluationResponse:
+    def callback(self, provider: str, *, code: str, state: str) -> oidcCallbackResponse:
         _response = httpx.request(
-            "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/batch-evaluate"),
-            json=jsonable_encoder(request),
+            "GET",
+            urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/method/oidc/{provider}/callback"),
+            params={"code": code, "state": state},
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(batchEvaluationResponse, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(oidcCallbackResponse, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -59,45 +56,43 @@ class EvaluateClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncEvaluateClient:
+class AsyncAuthMethodOidcClient:
     def __init__(
         self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
     ):
         self._environment = environment
         self._token = token
 
-    async def evaluate(self, namespace_key: str, *, request: evaluationRequest) -> evaluationResponse:
+    async def authorize_url(self, provider: str, *, state: str) -> oidcAuthorizeURLResponse:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/evaluate"),
-                json=jsonable_encoder(request),
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/method/oidc/{provider}/authorize"),
+                params={"state": state},
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(evaluationResponse, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(oidcAuthorizeURLResponse, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def batch_evaluate(self, namespace_key: str, *, request: batchEvaluationRequest) -> batchEvaluationResponse:
+    async def callback(self, provider: str, *, code: str, state: str) -> oidcCallbackResponse:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/batch-evaluate"
-                ),
-                json=jsonable_encoder(request),
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/method/oidc/{provider}/callback"),
+                params={"code": code, "state": state},
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(batchEvaluationResponse, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(oidcCallbackResponse, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

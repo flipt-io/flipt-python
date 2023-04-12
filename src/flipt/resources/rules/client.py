@@ -7,10 +7,10 @@ from json.decoder import JSONDecodeError
 import httpx
 import pydantic
 
-from ....environment import FliptApiEnvironment
 from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
+from ...environment import FliptApiEnvironment
 from .types.rule import rule
 from .types.rule_create_request import ruleCreateRequest
 from .types.rule_list import ruleList

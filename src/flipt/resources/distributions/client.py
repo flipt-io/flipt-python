@@ -7,27 +7,30 @@ from json.decoder import JSONDecodeError
 import httpx
 import pydantic
 
-from ....environment import FliptApiEnvironment
 from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
-from .types.variant import variant
-from .types.variant_create_request import variantCreateRequest
-from .types.variant_update_request import variantUpdateRequest
+from ...environment import FliptApiEnvironment
+from .types.distribution import distribution
+from .types.distribution_create_request import distributionCreateRequest
+from .types.distribution_update_request import distributionUpdateRequest
 
 
-class VariantsClient:
+class DistributionsClient:
     def __init__(
         self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
     ):
         self._environment = environment
         self._token = token
 
-    def create(self, namespace_key: str, flag_key: str, *, request: variantCreateRequest) -> variant:
+    def create(
+        self, namespace_key: str, flag_key: str, rule_id: str, *, request: distributionCreateRequest
+    ) -> distribution:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(
-                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants"
+                f"{self._environment.value}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions",
             ),
             json=jsonable_encoder(request),
             headers=remove_none_from_headers(
@@ -35,19 +38,21 @@ class VariantsClient:
             ),
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, namespace_key: str, flag_key: str, id: str) -> None:
+    def delete(self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, variant_id: str) -> None:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(
-                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants/{id}"
+                f"{self._environment.value}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions/{id}",
             ),
+            params={"variantId": variant_id},
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -60,11 +65,14 @@ class VariantsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, namespace_key: str, flag_key: str, id: str, *, request: variantUpdateRequest) -> variant:
+    def update(
+        self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, request: distributionUpdateRequest
+    ) -> distribution:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(
-                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants/{id}"
+                f"{self._environment.value}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions/{id}",
             ),
             json=jsonable_encoder(request),
             headers=remove_none_from_headers(
@@ -72,7 +80,7 @@ class VariantsClient:
             ),
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -80,19 +88,22 @@ class VariantsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncVariantsClient:
+class AsyncDistributionsClient:
     def __init__(
         self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
     ):
         self._environment = environment
         self._token = token
 
-    async def create(self, namespace_key: str, flag_key: str, *, request: variantCreateRequest) -> variant:
+    async def create(
+        self, namespace_key: str, flag_key: str, rule_id: str, *, request: distributionCreateRequest
+    ) -> distribution:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
                 urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants"
+                    f"{self._environment.value}/",
+                    f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions",
                 ),
                 json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
@@ -100,20 +111,22 @@ class AsyncVariantsClient:
                 ),
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, namespace_key: str, flag_key: str, id: str) -> None:
+    async def delete(self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, variant_id: str) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants/{id}"
+                    f"{self._environment.value}/",
+                    f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions/{id}",
                 ),
+                params={"variantId": variant_id},
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -126,12 +139,15 @@ class AsyncVariantsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, namespace_key: str, flag_key: str, id: str, *, request: variantUpdateRequest) -> variant:
+    async def update(
+        self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, request: distributionUpdateRequest
+    ) -> distribution:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
                 urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants/{id}"
+                    f"{self._environment.value}/",
+                    f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{rule_id}/distributions/{id}",
                 ),
                 json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
@@ -139,7 +155,7 @@ class AsyncVariantsClient:
                 ),
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

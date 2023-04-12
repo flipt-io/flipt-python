@@ -8,10 +8,10 @@ from json.decoder import JSONDecodeError
 import httpx
 import pydantic
 
-from ....environment import FliptApiEnvironment
 from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
+from ...environment import FliptApiEnvironment
 from .types.authentication import authentication
 from .types.authentication_list import authenticationList
 
