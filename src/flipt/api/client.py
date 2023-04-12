@@ -13,6 +13,7 @@ from .resources.constraints.client import AsyncConstraintsClient, ConstraintsCli
 from .resources.distributions.client import AsyncDistributionsClient, DistributionsClient
 from .resources.evaluate.client import AsyncEvaluateClient, EvaluateClient
 from .resources.flags.client import AsyncFlagsClient, FlagsClient
+from .resources.namespaces.client import AsyncNamespacesClient, NamespacesClient
 from .resources.rules.client import AsyncRulesClient, RulesClient
 from .resources.segments.client import AsyncSegmentsClient, SegmentsClient
 from .resources.variants.client import AsyncVariantsClient, VariantsClient
@@ -56,6 +57,10 @@ class FliptApi:
     @cached_property
     def flags(self) -> FlagsClient:
         return FlagsClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def namespaces(self) -> NamespacesClient:
+        return NamespacesClient(environment=self._environment, token=self._token)
 
     @cached_property
     def rules(self) -> RulesClient:
@@ -108,6 +113,10 @@ class AsyncFliptApi:
     @cached_property
     def flags(self) -> AsyncFlagsClient:
         return AsyncFlagsClient(environment=self._environment, token=self._token)
+
+    @cached_property
+    def namespaces(self) -> AsyncNamespacesClient:
+        return AsyncNamespacesClient(environment=self._environment, token=self._token)
 
     @cached_property
     def rules(self) -> AsyncRulesClient:

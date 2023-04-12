@@ -10,6 +10,7 @@ from . import (
     distributions,
     evaluate,
     flags,
+    namespaces,
     rules,
     segments,
     variants,
@@ -27,6 +28,7 @@ from .evaluate import (
     evaluationResponse,
 )
 from .flags import flag, flagCreateRequest, flagList, flagUpdateRequest
+from .namespaces import namespace, namespaceCreateRequest, namespaceList, namespaceUpdateRequest
 from .rules import rule, ruleCreateRequest, ruleList, ruleOrderRequest, ruleUpdateRequest
 from .segments import segment, segmentCreateRequest, segmentList, segmentMatchType, segmentUpdateRequest
 from .variants import variant, variantCreateRequest, variantUpdateRequest
@@ -62,6 +64,11 @@ __all__ = [
     "flagList",
     "flagUpdateRequest",
     "flags",
+    "namespace",
+    "namespaceCreateRequest",
+    "namespaceList",
+    "namespaceUpdateRequest",
+    "namespaces",
     "oidcAuthorizeURLResponse",
     "oidcCallbackResponse",
     "rule",
