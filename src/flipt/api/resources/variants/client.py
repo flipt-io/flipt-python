@@ -12,6 +12,8 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from .types.variant import variant
+from .types.variant_create_request import variantCreateRequest
+from .types.variant_update_request import variantUpdateRequest
 
 
 class VariantsClient:
@@ -21,19 +23,13 @@ class VariantsClient:
         self._environment = environment
         self._token = token
 
-    def create(
-        self,
-        flag_key: str,
-        *,
-        key: str,
-        name: typing.Optional[str] = None,
-        description: typing.Optional[str] = None,
-        attachment: typing.Optional[str] = None,
-    ) -> variant:
+    def create(self, namespace_key: str, flag_key: str, *, request: variantCreateRequest) -> variant:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants"),
-            json=jsonable_encoder({"key": key, "name": name, "description": description, "attachment": attachment}),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants"
+            ),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -46,10 +42,12 @@ class VariantsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, flag_key: str, id: str) -> None:
+    def delete(self, namespace_key: str, flag_key: str, id: str) -> None:
         _response = httpx.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants/{id}"),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants/{id}"
+            ),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -62,20 +60,13 @@ class VariantsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(
-        self,
-        flag_key: str,
-        id: str,
-        *,
-        key: str,
-        name: typing.Optional[str] = None,
-        description: typing.Optional[str] = None,
-        attachment: typing.Optional[str] = None,
-    ) -> variant:
+    def update(self, namespace_key: str, flag_key: str, id: str, *, request: variantUpdateRequest) -> variant:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants/{id}"),
-            json=jsonable_encoder({"key": key, "name": name, "description": description, "attachment": attachment}),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants/{id}"
+            ),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -96,20 +87,14 @@ class AsyncVariantsClient:
         self._environment = environment
         self._token = token
 
-    async def create(
-        self,
-        flag_key: str,
-        *,
-        key: str,
-        name: typing.Optional[str] = None,
-        description: typing.Optional[str] = None,
-        attachment: typing.Optional[str] = None,
-    ) -> variant:
+    async def create(self, namespace_key: str, flag_key: str, *, request: variantCreateRequest) -> variant:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants"),
-                json=jsonable_encoder({"key": key, "name": name, "description": description, "attachment": attachment}),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants"
+                ),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -122,11 +107,13 @@ class AsyncVariantsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, flag_key: str, id: str) -> None:
+    async def delete(self, namespace_key: str, flag_key: str, id: str) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "DELETE",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants/{id}"),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants/{id}"
+                ),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -139,21 +126,14 @@ class AsyncVariantsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(
-        self,
-        flag_key: str,
-        id: str,
-        *,
-        key: str,
-        name: typing.Optional[str] = None,
-        description: typing.Optional[str] = None,
-        attachment: typing.Optional[str] = None,
-    ) -> variant:
+    async def update(self, namespace_key: str, flag_key: str, id: str, *, request: variantUpdateRequest) -> variant:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/variants/{id}"),
-                json=jsonable_encoder({"key": key, "name": name, "description": description, "attachment": attachment}),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/variants/{id}"
+                ),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),

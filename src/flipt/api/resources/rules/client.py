@@ -12,7 +12,10 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from .types.rule import rule
+from .types.rule_create_request import ruleCreateRequest
 from .types.rule_list import ruleList
+from .types.rule_order_request import ruleOrderRequest
+from .types.rule_update_request import ruleUpdateRequest
 
 
 class RulesClient:
@@ -24,6 +27,7 @@ class RulesClient:
 
     def list(
         self,
+        namespace_key: str,
         flag_key: str,
         *,
         limit: typing.Optional[int] = None,
@@ -32,7 +36,9 @@ class RulesClient:
     ) -> ruleList:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules"),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules"
+            ),
             params={"limit": limit, "offset": offset, "pageToken": page_token},
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -46,11 +52,13 @@ class RulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, flag_key: str, *, segment_key: str, rank: int) -> rule:
+    def create(self, namespace_key: str, flag_key: str, *, request: ruleCreateRequest) -> rule:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules"),
-            json=jsonable_encoder({"segmentKey": segment_key, "rank": rank}),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules"
+            ),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -63,11 +71,13 @@ class RulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def order(self, flag_key: str, *, rule_ids: typing.List[str]) -> None:
+    def order(self, namespace_key: str, flag_key: str, *, request: ruleOrderRequest) -> None:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/order"),
-            json=jsonable_encoder({"ruleIds": rule_ids}),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/order"
+            ),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -80,10 +90,12 @@ class RulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, flag_key: str, id: str) -> rule:
+    def get(self, namespace_key: str, flag_key: str, id: str) -> rule:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{id}"
+            ),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -96,10 +108,12 @@ class RulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, flag_key: str, id: str) -> None:
+    def delete(self, namespace_key: str, flag_key: str, id: str) -> None:
         _response = httpx.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{id}"
+            ),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -112,11 +126,13 @@ class RulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, flag_key: str, id: str, *, segment_key: str) -> None:
+    def update(self, namespace_key: str, flag_key: str, id: str, *, request: ruleUpdateRequest) -> None:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
-            json=jsonable_encoder({"segmentKey": segment_key}),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{id}"
+            ),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -139,6 +155,7 @@ class AsyncRulesClient:
 
     async def list(
         self,
+        namespace_key: str,
         flag_key: str,
         *,
         limit: typing.Optional[int] = None,
@@ -148,7 +165,9 @@ class AsyncRulesClient:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules"),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules"
+                ),
                 params={"limit": limit, "offset": offset, "pageToken": page_token},
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -162,12 +181,14 @@ class AsyncRulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create(self, flag_key: str, *, segment_key: str, rank: int) -> rule:
+    async def create(self, namespace_key: str, flag_key: str, *, request: ruleCreateRequest) -> rule:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules"),
-                json=jsonable_encoder({"segmentKey": segment_key, "rank": rank}),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules"
+                ),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -180,12 +201,14 @@ class AsyncRulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def order(self, flag_key: str, *, rule_ids: typing.List[str]) -> None:
+    async def order(self, namespace_key: str, flag_key: str, *, request: ruleOrderRequest) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/order"),
-                json=jsonable_encoder({"ruleIds": rule_ids}),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/order"
+                ),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -198,11 +221,13 @@ class AsyncRulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, flag_key: str, id: str) -> rule:
+    async def get(self, namespace_key: str, flag_key: str, id: str) -> rule:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{id}"
+                ),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -215,11 +240,13 @@ class AsyncRulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, flag_key: str, id: str) -> None:
+    async def delete(self, namespace_key: str, flag_key: str, id: str) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "DELETE",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{id}"
+                ),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -232,12 +259,14 @@ class AsyncRulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, flag_key: str, id: str, *, segment_key: str) -> None:
+    async def update(self, namespace_key: str, flag_key: str, id: str, *, request: ruleUpdateRequest) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/flags/{flag_key}/rules/{id}"),
-                json=jsonable_encoder({"segmentKey": segment_key}),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rules/{id}"
+                ),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),

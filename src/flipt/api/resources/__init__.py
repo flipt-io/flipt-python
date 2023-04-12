@@ -17,13 +17,19 @@ from . import (
 from .auth import authentication, authenticationList, authenticationMethod, authenticationToken
 from .auth_method_oidc import oidcAuthorizeURLResponse, oidcCallbackResponse
 from .commons import Pageable
-from .constraints import constraint, constraintComparisonType
-from .distributions import distribution
-from .evaluate import batchEvaluationResponse, evaluationReason, evaluationRequest, evaluationResponse
-from .flags import flag, flagList
-from .rules import rule, ruleList
-from .segments import segment, segmentList, segmentMatchType
-from .variants import variant
+from .constraints import constraint, constraintComparisonType, constraintCreateRequest, constraintUpdateRequest
+from .distributions import distribution, distributionCreateRequest, distributionUpdateRequest
+from .evaluate import (
+    batchEvaluationRequest,
+    batchEvaluationResponse,
+    evaluationReason,
+    evaluationRequest,
+    evaluationResponse,
+)
+from .flags import flag, flagCreateRequest, flagList, flagUpdateRequest
+from .rules import rule, ruleCreateRequest, ruleList, ruleOrderRequest, ruleUpdateRequest
+from .segments import segment, segmentCreateRequest, segmentList, segmentMatchType, segmentUpdateRequest
+from .variants import variant, variantCreateRequest, variantUpdateRequest
 
 __all__ = [
     "Pageable",
@@ -35,29 +41,43 @@ __all__ = [
     "authenticationList",
     "authenticationMethod",
     "authenticationToken",
+    "batchEvaluationRequest",
     "batchEvaluationResponse",
     "commons",
     "constraint",
     "constraintComparisonType",
+    "constraintCreateRequest",
+    "constraintUpdateRequest",
     "constraints",
     "distribution",
+    "distributionCreateRequest",
+    "distributionUpdateRequest",
     "distributions",
     "evaluate",
     "evaluationReason",
     "evaluationRequest",
     "evaluationResponse",
     "flag",
+    "flagCreateRequest",
     "flagList",
+    "flagUpdateRequest",
     "flags",
     "oidcAuthorizeURLResponse",
     "oidcCallbackResponse",
     "rule",
+    "ruleCreateRequest",
     "ruleList",
+    "ruleOrderRequest",
+    "ruleUpdateRequest",
     "rules",
     "segment",
+    "segmentCreateRequest",
     "segmentList",
     "segmentMatchType",
+    "segmentUpdateRequest",
     "segments",
     "variant",
+    "variantCreateRequest",
+    "variantUpdateRequest",
     "variants",
 ]

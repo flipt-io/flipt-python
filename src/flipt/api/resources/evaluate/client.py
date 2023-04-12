@@ -11,6 +11,7 @@ from ....environment import FliptApiEnvironment
 from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
+from .types.batch_evaluation_request import batchEvaluationRequest
 from .types.batch_evaluation_response import batchEvaluationResponse
 from .types.evaluation_request import evaluationRequest
 from .types.evaluation_response import evaluationResponse
@@ -23,10 +24,10 @@ class EvaluateClient:
         self._environment = environment
         self._token = token
 
-    def evaluate(self, *, request: evaluationRequest) -> evaluationResponse:
+    def evaluate(self, namespace_key: str, *, request: evaluationRequest) -> evaluationResponse:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/evaluate"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/evaluate"),
             json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -40,19 +41,11 @@ class EvaluateClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def batch_evaluate(
-        self,
-        *,
-        request_id: typing.Optional[str] = None,
-        requests: typing.List[evaluationRequest],
-        exclude_not_found: typing.Optional[bool] = None,
-    ) -> batchEvaluationResponse:
+    def batch_evaluate(self, namespace_key: str, *, request: batchEvaluationRequest) -> batchEvaluationResponse:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/batch-evaluate"),
-            json=jsonable_encoder(
-                {"requestId": request_id, "requests": requests, "excludeNotFound": exclude_not_found}
-            ),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/batch-evaluate"),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -73,11 +66,11 @@ class AsyncEvaluateClient:
         self._environment = environment
         self._token = token
 
-    async def evaluate(self, *, request: evaluationRequest) -> evaluationResponse:
+    async def evaluate(self, namespace_key: str, *, request: evaluationRequest) -> evaluationResponse:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/evaluate"),
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/evaluate"),
                 json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -91,20 +84,14 @@ class AsyncEvaluateClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def batch_evaluate(
-        self,
-        *,
-        request_id: typing.Optional[str] = None,
-        requests: typing.List[evaluationRequest],
-        exclude_not_found: typing.Optional[bool] = None,
-    ) -> batchEvaluationResponse:
+    async def batch_evaluate(self, namespace_key: str, *, request: batchEvaluationRequest) -> batchEvaluationResponse:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/batch-evaluate"),
-                json=jsonable_encoder(
-                    {"requestId": request_id, "requests": requests, "excludeNotFound": exclude_not_found}
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/batch-evaluate"
                 ),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),

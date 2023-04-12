@@ -12,7 +12,8 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from .types.constraint import constraint
-from .types.constraint_comparison_type import constraintComparisonType
+from .types.constraint_create_request import constraintCreateRequest
+from .types.constraint_update_request import constraintUpdateRequest
 
 
 class ConstraintsClient:
@@ -22,19 +23,13 @@ class ConstraintsClient:
         self._environment = environment
         self._token = token
 
-    def create(
-        self,
-        segment_key: str,
-        *,
-        type: constraintComparisonType,
-        property: str,
-        operator: str,
-        value: typing.Optional[str] = None,
-    ) -> constraint:
+    def create(self, namespace_key: str, segment_key: str, *, request: constraintCreateRequest) -> constraint:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints"),
-            json=jsonable_encoder({"type": type, "property": property, "operator": operator, "value": value}),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints"
+            ),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -47,10 +42,13 @@ class ConstraintsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, segment_key: str, id: str) -> None:
+    def delete(self, namespace_key: str, segment_key: str, id: str) -> None:
         _response = httpx.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/",
+                f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints/{id}",
+            ),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -63,20 +61,14 @@ class ConstraintsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(
-        self,
-        segment_key: str,
-        id: str,
-        *,
-        type: constraintComparisonType,
-        property: str,
-        operator: str,
-        value: typing.Optional[str] = None,
-    ) -> None:
+    def update(self, namespace_key: str, segment_key: str, id: str, *, request: constraintUpdateRequest) -> None:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
-            json=jsonable_encoder({"type": type, "property": property, "operator": operator, "value": value}),
+            urllib.parse.urljoin(
+                f"{self._environment.value}/",
+                f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints/{id}",
+            ),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -97,20 +89,15 @@ class AsyncConstraintsClient:
         self._environment = environment
         self._token = token
 
-    async def create(
-        self,
-        segment_key: str,
-        *,
-        type: constraintComparisonType,
-        property: str,
-        operator: str,
-        value: typing.Optional[str] = None,
-    ) -> constraint:
+    async def create(self, namespace_key: str, segment_key: str, *, request: constraintCreateRequest) -> constraint:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints"),
-                json=jsonable_encoder({"type": type, "property": property, "operator": operator, "value": value}),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/",
+                    f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints",
+                ),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -123,11 +110,14 @@ class AsyncConstraintsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, segment_key: str, id: str) -> None:
+    async def delete(self, namespace_key: str, segment_key: str, id: str) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "DELETE",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/",
+                    f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints/{id}",
+                ),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -140,21 +130,15 @@ class AsyncConstraintsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(
-        self,
-        segment_key: str,
-        id: str,
-        *,
-        type: constraintComparisonType,
-        property: str,
-        operator: str,
-        value: typing.Optional[str] = None,
-    ) -> None:
+    async def update(self, namespace_key: str, segment_key: str, id: str, *, request: constraintUpdateRequest) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{segment_key}/constraints/{id}"),
-                json=jsonable_encoder({"type": type, "property": property, "operator": operator, "value": value}),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/",
+                    f"api/v1/namespaces/{namespace_key}/segments/{segment_key}/constraints/{id}",
+                ),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),

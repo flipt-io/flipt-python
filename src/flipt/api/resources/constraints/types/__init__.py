@@ -2,5 +2,7 @@
 
 from .constraint import constraint
 from .constraint_comparison_type import constraintComparisonType
+from .constraint_create_request import constraintCreateRequest
+from .constraint_update_request import constraintUpdateRequest
 
-__all__ = ["constraint", "constraintComparisonType"]
+__all__ = ["constraint", "constraintComparisonType", "constraintCreateRequest", "constraintUpdateRequest"]

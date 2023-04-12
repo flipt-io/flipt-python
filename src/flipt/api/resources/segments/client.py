@@ -12,8 +12,9 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from .types.segment import segment
+from .types.segment_create_request import segmentCreateRequest
 from .types.segment_list import segmentList
-from .types.segment_match_type import segmentMatchType
+from .types.segment_update_request import segmentUpdateRequest
 
 
 class SegmentsClient:
@@ -25,6 +26,7 @@ class SegmentsClient:
 
     def list(
         self,
+        namespace_key: str,
         *,
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
@@ -32,7 +34,7 @@ class SegmentsClient:
     ) -> segmentList:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/segments"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments"),
             params={"limit": limit, "offset": offset, "pageToken": page_token},
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -46,11 +48,11 @@ class SegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, *, key: str, name: str, description: str, match_type: segmentMatchType) -> segment:
+    def create(self, namespace_key: str, *, request: segmentCreateRequest) -> segment:
         _response = httpx.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/segments"),
-            json=jsonable_encoder({"key": key, "name": name, "description": description, "matchType": match_type}),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments"),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -63,10 +65,10 @@ class SegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, key: str) -> segment:
+    def get(self, namespace_key: str, key: str) -> segment:
         _response = httpx.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{key}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -79,10 +81,10 @@ class SegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, key: str) -> None:
+    def delete(self, namespace_key: str, key: str) -> None:
         _response = httpx.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{key}"),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -95,11 +97,11 @@ class SegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, key: str, *, name: str, description: str, match_type: segmentMatchType) -> segment:
+    def update(self, namespace_key: str, key: str, *, request: segmentUpdateRequest) -> segment:
         _response = httpx.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{key}"),
-            json=jsonable_encoder({"name": name, "description": description, "matchType": match_type}),
+            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"),
+            json=jsonable_encoder(request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
@@ -122,6 +124,7 @@ class AsyncSegmentsClient:
 
     async def list(
         self,
+        namespace_key: str,
         *,
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
@@ -130,7 +133,7 @@ class AsyncSegmentsClient:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/segments"),
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments"),
                 params={"limit": limit, "offset": offset, "pageToken": page_token},
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
@@ -144,12 +147,12 @@ class AsyncSegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create(self, *, key: str, name: str, description: str, match_type: segmentMatchType) -> segment:
+    async def create(self, namespace_key: str, *, request: segmentCreateRequest) -> segment:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/segments"),
-                json=jsonable_encoder({"key": key, "name": name, "description": description, "matchType": match_type}),
+                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments"),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -162,11 +165,13 @@ class AsyncSegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, key: str) -> segment:
+    async def get(self, namespace_key: str, key: str) -> segment:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{key}"),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"
+                ),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -179,11 +184,13 @@ class AsyncSegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, key: str) -> None:
+    async def delete(self, namespace_key: str, key: str) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "DELETE",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{key}"),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"
+                ),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
@@ -196,12 +203,14 @@ class AsyncSegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, key: str, *, name: str, description: str, match_type: segmentMatchType) -> segment:
+    async def update(self, namespace_key: str, key: str, *, request: segmentUpdateRequest) -> segment:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/segments/{key}"),
-                json=jsonable_encoder({"name": name, "description": description, "matchType": match_type}),
+                urllib.parse.urljoin(
+                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"
+                ),
+                json=jsonable_encoder(request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
