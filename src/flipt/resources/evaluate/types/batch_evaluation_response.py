@@ -11,7 +11,7 @@ from .evaluation_response import evaluationResponse
 
 class batchEvaluationResponse(pydantic.BaseModel):
     request_id: str = pydantic.Field(alias="requestId")
-    response: typing.List[evaluationResponse]
+    responses: typing.List[evaluationResponse]
     request_duration_millis: float = pydantic.Field(alias="requestDurationMillis")
 
     def json(self, **kwargs: typing.Any) -> str:
