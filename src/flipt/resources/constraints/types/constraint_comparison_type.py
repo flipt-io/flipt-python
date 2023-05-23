@@ -15,6 +15,7 @@ class constraintComparisonType(str, enum.Enum):
     STRING_COMPARISON_TYPE = "STRING_COMPARISON_TYPE"
     NUMBER_COMPARISON_TYPE = "NUMBER_COMPARISON_TYPE"
     BOOLEAN_COMPARISON_TYPE = "BOOLEAN_COMPARISON_TYPE"
+    DATETIME_COMPARISON_TYPE = "DATETIME_COMPARISON_TYPE"
 
     def visit(
         self,
@@ -22,6 +23,7 @@ class constraintComparisonType(str, enum.Enum):
         string_comparison_type: typing.Callable[[], T_Result],
         number_comparison_type: typing.Callable[[], T_Result],
         boolean_comparison_type: typing.Callable[[], T_Result],
+        datetime_comparison_type: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is constraintComparisonType.UNKNOWN_COMPARISON_TYPE:
             return unknown_comparison_type()
@@ -31,3 +33,5 @@ class constraintComparisonType(str, enum.Enum):
             return number_comparison_type()
         if self is constraintComparisonType.BOOLEAN_COMPARISON_TYPE:
             return boolean_comparison_type()
+        if self is constraintComparisonType.DATETIME_COMPARISON_TYPE:
+            return datetime_comparison_type()

@@ -16,6 +16,7 @@ class constraint(pydantic.BaseModel):
     property: str
     operator: str
     value: str
+    description: str
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
 
