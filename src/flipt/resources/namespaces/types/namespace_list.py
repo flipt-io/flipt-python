@@ -6,11 +6,11 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .namespace import namespace
+from .namespace import Namespace
 
 
-class namespaceList(pydantic.BaseModel):
-    namespaces: typing.List[namespace]
+class NamespaceList(pydantic.BaseModel):
+    namespaces: typing.List[Namespace]
     next_page_token: str = pydantic.Field(alias="nextPageToken")
     total_count: int = pydantic.Field(alias="totalCount")
 

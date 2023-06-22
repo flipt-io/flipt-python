@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class ruleUpdateRequest(pydantic.BaseModel):
+class RuleUpdateRequest(pydantic.BaseModel):
     segment_key: str = pydantic.Field(alias="segmentKey")
 
     def json(self, **kwargs: typing.Any) -> str:

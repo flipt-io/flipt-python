@@ -6,12 +6,12 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .authentication_method import authenticationMethod
+from .authentication_method import AuthenticationMethod
 
 
-class authentication(pydantic.BaseModel):
+class Authentication(pydantic.BaseModel):
     id: str
-    method: authenticationMethod
+    method: AuthenticationMethod
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
     expires_at: typing.Optional[dt.datetime] = pydantic.Field(alias="expiresAt")

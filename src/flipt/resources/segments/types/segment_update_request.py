@@ -6,13 +6,13 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .segment_match_type import segmentMatchType
+from .segment_match_type import SegmentMatchType
 
 
-class segmentUpdateRequest(pydantic.BaseModel):
+class SegmentUpdateRequest(pydantic.BaseModel):
     name: str
     description: str
-    match_type: segmentMatchType = pydantic.Field(alias="matchType")
+    match_type: SegmentMatchType = pydantic.Field(alias="matchType")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

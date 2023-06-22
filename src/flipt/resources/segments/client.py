@@ -11,10 +11,10 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from .types.segment import segment
-from .types.segment_create_request import segmentCreateRequest
-from .types.segment_list import segmentList
-from .types.segment_update_request import segmentUpdateRequest
+from .types.segment import Segment
+from .types.segment_create_request import SegmentCreateRequest
+from .types.segment_list import SegmentList
+from .types.segment_update_request import SegmentUpdateRequest
 
 
 class SegmentsClient:
@@ -31,7 +31,7 @@ class SegmentsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
-    ) -> segmentList:
+    ) -> SegmentList:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments"),
@@ -39,16 +39,17 @@ class SegmentsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(segmentList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(SegmentList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, namespace_key: str, *, request: segmentCreateRequest) -> segment:
+    def create(self, namespace_key: str, *, request: SegmentCreateRequest) -> Segment:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments"),
@@ -56,25 +57,27 @@ class SegmentsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(segment, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Segment, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, namespace_key: str, key: str) -> segment:
+    def get(self, namespace_key: str, key: str) -> Segment:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(segment, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Segment, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -88,6 +91,7 @@ class SegmentsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -97,7 +101,7 @@ class SegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, namespace_key: str, key: str, *, request: segmentUpdateRequest) -> segment:
+    def update(self, namespace_key: str, key: str, *, request: SegmentUpdateRequest) -> Segment:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"),
@@ -105,9 +109,10 @@ class SegmentsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(segment, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Segment, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -129,7 +134,7 @@ class AsyncSegmentsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
-    ) -> segmentList:
+    ) -> SegmentList:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -138,16 +143,17 @@ class AsyncSegmentsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(segmentList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(SegmentList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create(self, namespace_key: str, *, request: segmentCreateRequest) -> segment:
+    async def create(self, namespace_key: str, *, request: SegmentCreateRequest) -> Segment:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
@@ -156,16 +162,17 @@ class AsyncSegmentsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(segment, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Segment, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, namespace_key: str, key: str) -> segment:
+    async def get(self, namespace_key: str, key: str) -> Segment:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -175,9 +182,10 @@ class AsyncSegmentsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(segment, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Segment, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -194,6 +202,7 @@ class AsyncSegmentsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return
@@ -203,7 +212,7 @@ class AsyncSegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, namespace_key: str, key: str, *, request: segmentUpdateRequest) -> segment:
+    async def update(self, namespace_key: str, key: str, *, request: SegmentUpdateRequest) -> Segment:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
@@ -214,9 +223,10 @@ class AsyncSegmentsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(segment, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Segment, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class evaluationRequest(pydantic.BaseModel):
+class EvaluationRequest(pydantic.BaseModel):
     request_id: typing.Optional[str] = pydantic.Field(alias="requestId")
     flag_key: str = pydantic.Field(alias="flagKey")
     entity_id: str = pydantic.Field(alias="entityId")

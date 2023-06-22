@@ -11,9 +11,9 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from .types.distribution import distribution
-from .types.distribution_create_request import distributionCreateRequest
-from .types.distribution_update_request import distributionUpdateRequest
+from .types.distribution import Distribution
+from .types.distribution_create_request import DistributionCreateRequest
+from .types.distribution_update_request import DistributionUpdateRequest
 
 
 class DistributionsClient:
@@ -24,8 +24,8 @@ class DistributionsClient:
         self._token = token
 
     def create(
-        self, namespace_key: str, flag_key: str, rule_id: str, *, request: distributionCreateRequest
-    ) -> distribution:
+        self, namespace_key: str, flag_key: str, rule_id: str, *, request: DistributionCreateRequest
+    ) -> Distribution:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(
@@ -36,9 +36,10 @@ class DistributionsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Distribution, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -56,6 +57,7 @@ class DistributionsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -66,8 +68,8 @@ class DistributionsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def update(
-        self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, request: distributionUpdateRequest
-    ) -> distribution:
+        self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, request: DistributionUpdateRequest
+    ) -> Distribution:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(
@@ -78,9 +80,10 @@ class DistributionsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Distribution, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -96,8 +99,8 @@ class AsyncDistributionsClient:
         self._token = token
 
     async def create(
-        self, namespace_key: str, flag_key: str, rule_id: str, *, request: distributionCreateRequest
-    ) -> distribution:
+        self, namespace_key: str, flag_key: str, rule_id: str, *, request: DistributionCreateRequest
+    ) -> Distribution:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
@@ -109,9 +112,10 @@ class AsyncDistributionsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Distribution, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -130,6 +134,7 @@ class AsyncDistributionsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return
@@ -140,8 +145,8 @@ class AsyncDistributionsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update(
-        self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, request: distributionUpdateRequest
-    ) -> distribution:
+        self, namespace_key: str, flag_key: str, rule_id: str, id: str, *, request: DistributionUpdateRequest
+    ) -> Distribution:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
@@ -153,9 +158,10 @@ class AsyncDistributionsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(distribution, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Distribution, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

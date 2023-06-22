@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class ruleOrderRequest(pydantic.BaseModel):
+class RuleOrderRequest(pydantic.BaseModel):
     rule_ids: typing.List[str] = pydantic.Field(alias="ruleIds")
 
     def json(self, **kwargs: typing.Any) -> str:

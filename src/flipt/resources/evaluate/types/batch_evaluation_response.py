@@ -6,12 +6,12 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .evaluation_response import evaluationResponse
+from .evaluation_response import EvaluationResponse
 
 
-class batchEvaluationResponse(pydantic.BaseModel):
+class BatchEvaluationResponse(pydantic.BaseModel):
     request_id: str = pydantic.Field(alias="requestId")
-    responses: typing.List[evaluationResponse]
+    responses: typing.List[EvaluationResponse]
     request_duration_millis: float = pydantic.Field(alias="requestDurationMillis")
 
     def json(self, **kwargs: typing.Any) -> str:

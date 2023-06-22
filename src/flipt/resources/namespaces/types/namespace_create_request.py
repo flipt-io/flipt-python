@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class namespaceCreateRequest(pydantic.BaseModel):
+class NamespaceCreateRequest(pydantic.BaseModel):
     key: str
     name: str
     description: typing.Optional[str]

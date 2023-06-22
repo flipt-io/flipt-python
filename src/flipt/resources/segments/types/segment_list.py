@@ -6,11 +6,11 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .segment import segment
+from .segment import Segment
 
 
-class segmentList(pydantic.BaseModel):
-    segments: typing.List[segment]
+class SegmentList(pydantic.BaseModel):
+    segments: typing.List[Segment]
     next_page_token: str = pydantic.Field(alias="nextPageToken")
     total_count: int = pydantic.Field(alias="totalCount")
 

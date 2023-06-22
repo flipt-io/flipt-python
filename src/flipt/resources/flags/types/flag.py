@@ -6,17 +6,17 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from ...variants.types.variant import variant
+from ...variants.types.variant import Variant
 
 
-class flag(pydantic.BaseModel):
+class Flag(pydantic.BaseModel):
     key: str
     name: str
     description: str
     enabled: bool
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
-    variants: typing.List[variant]
+    variants: typing.List[Variant]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

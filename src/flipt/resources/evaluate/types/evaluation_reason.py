@@ -6,7 +6,7 @@ import typing
 T_Result = typing.TypeVar("T_Result")
 
 
-class evaluationReason(str, enum.Enum):
+class EvaluationReason(str, enum.Enum):
     UNKNOWN_EVALUATION_REASON = "UNKNOWN_EVALUATION_REASON"
     FLAG_DISABLED_EVALUATION_REASON = "FLAG_DISABLED_EVALUATION_REASON"
     FLAG_NOT_FOUND_EVALUATION_REASON = "FLAG_NOT_FOUND_EVALUATION_REASON"
@@ -21,13 +21,13 @@ class evaluationReason(str, enum.Enum):
         match_evaluation_reason: typing.Callable[[], T_Result],
         error_evaluation_reason: typing.Callable[[], T_Result],
     ) -> T_Result:
-        if self is evaluationReason.UNKNOWN_EVALUATION_REASON:
+        if self is EvaluationReason.UNKNOWN_EVALUATION_REASON:
             return unknown_evaluation_reason()
-        if self is evaluationReason.FLAG_DISABLED_EVALUATION_REASON:
+        if self is EvaluationReason.FLAG_DISABLED_EVALUATION_REASON:
             return flag_disabled_evaluation_reason()
-        if self is evaluationReason.FLAG_NOT_FOUND_EVALUATION_REASON:
+        if self is EvaluationReason.FLAG_NOT_FOUND_EVALUATION_REASON:
             return flag_not_found_evaluation_reason()
-        if self is evaluationReason.MATCH_EVALUATION_REASON:
+        if self is EvaluationReason.MATCH_EVALUATION_REASON:
             return match_evaluation_reason()
-        if self is evaluationReason.ERROR_EVALUATION_REASON:
+        if self is EvaluationReason.ERROR_EVALUATION_REASON:
             return error_evaluation_reason()

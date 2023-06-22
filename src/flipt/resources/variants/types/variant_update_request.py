@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class variantUpdateRequest(pydantic.BaseModel):
+class VariantUpdateRequest(pydantic.BaseModel):
     key: str
     name: typing.Optional[str]
     description: typing.Optional[str]

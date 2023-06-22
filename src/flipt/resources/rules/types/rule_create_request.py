@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class ruleCreateRequest(pydantic.BaseModel):
+class RuleCreateRequest(pydantic.BaseModel):
     segment_key: str = pydantic.Field(alias="segmentKey")
     rank: int
 

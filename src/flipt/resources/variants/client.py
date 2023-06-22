@@ -11,9 +11,9 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from .types.variant import variant
-from .types.variant_create_request import variantCreateRequest
-from .types.variant_update_request import variantUpdateRequest
+from .types.variant import Variant
+from .types.variant_create_request import VariantCreateRequest
+from .types.variant_update_request import VariantUpdateRequest
 
 
 class VariantsClient:
@@ -23,7 +23,7 @@ class VariantsClient:
         self._environment = environment
         self._token = token
 
-    def create(self, namespace_key: str, flag_key: str, *, request: variantCreateRequest) -> variant:
+    def create(self, namespace_key: str, flag_key: str, *, request: VariantCreateRequest) -> Variant:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(
@@ -33,9 +33,10 @@ class VariantsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Variant, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -51,6 +52,7 @@ class VariantsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -60,7 +62,7 @@ class VariantsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, namespace_key: str, flag_key: str, id: str, *, request: variantUpdateRequest) -> variant:
+    def update(self, namespace_key: str, flag_key: str, id: str, *, request: VariantUpdateRequest) -> Variant:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(
@@ -70,9 +72,10 @@ class VariantsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Variant, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -87,7 +90,7 @@ class AsyncVariantsClient:
         self._environment = environment
         self._token = token
 
-    async def create(self, namespace_key: str, flag_key: str, *, request: variantCreateRequest) -> variant:
+    async def create(self, namespace_key: str, flag_key: str, *, request: VariantCreateRequest) -> Variant:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
@@ -98,9 +101,10 @@ class AsyncVariantsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Variant, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -117,6 +121,7 @@ class AsyncVariantsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return
@@ -126,7 +131,7 @@ class AsyncVariantsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, namespace_key: str, flag_key: str, id: str, *, request: variantUpdateRequest) -> variant:
+    async def update(self, namespace_key: str, flag_key: str, id: str, *, request: VariantUpdateRequest) -> Variant:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
@@ -137,9 +142,10 @@ class AsyncVariantsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(variant, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Variant, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

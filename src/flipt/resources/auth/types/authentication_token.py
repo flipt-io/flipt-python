@@ -6,12 +6,12 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .authentication import authentication as resources_auth_types_authentication_authentication
+from .authentication import Authentication
 
 
-class authenticationToken(pydantic.BaseModel):
+class AuthenticationToken(pydantic.BaseModel):
     client_token: str = pydantic.Field(alias="clientToken")
-    authentication: resources_auth_types_authentication_authentication
+    authentication: Authentication
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -6,14 +6,14 @@ import typing
 T_Result = typing.TypeVar("T_Result")
 
 
-class segmentMatchType(str, enum.Enum):
+class SegmentMatchType(str, enum.Enum):
     ALL_MATCH_TYPE = "ALL_MATCH_TYPE"
     ANY_MATCH_TYPE = "ANY_MATCH_TYPE"
 
     def visit(
         self, all_match_type: typing.Callable[[], T_Result], any_match_type: typing.Callable[[], T_Result]
     ) -> T_Result:
-        if self is segmentMatchType.ALL_MATCH_TYPE:
+        if self is SegmentMatchType.ALL_MATCH_TYPE:
             return all_match_type()
-        if self is segmentMatchType.ANY_MATCH_TYPE:
+        if self is SegmentMatchType.ANY_MATCH_TYPE:
             return any_match_type()

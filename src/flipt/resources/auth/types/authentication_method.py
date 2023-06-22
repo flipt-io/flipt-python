@@ -6,7 +6,7 @@ import typing
 T_Result = typing.TypeVar("T_Result")
 
 
-class authenticationMethod(str, enum.Enum):
+class AuthenticationMethod(str, enum.Enum):
     """
     The default is METHOD_NONE
     """
@@ -23,11 +23,11 @@ class authenticationMethod(str, enum.Enum):
         method_oidc: typing.Callable[[], T_Result],
         method_kubernetes: typing.Callable[[], T_Result],
     ) -> T_Result:
-        if self is authenticationMethod.METHOD_NONE:
+        if self is AuthenticationMethod.METHOD_NONE:
             return method_none()
-        if self is authenticationMethod.METHOD_TOKEN:
+        if self is AuthenticationMethod.METHOD_TOKEN:
             return method_token()
-        if self is authenticationMethod.METHOD_OIDC:
+        if self is AuthenticationMethod.METHOD_OIDC:
             return method_oidc()
-        if self is authenticationMethod.METHOD_KUBERNETES:
+        if self is AuthenticationMethod.METHOD_KUBERNETES:
             return method_kubernetes()

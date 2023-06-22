@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class flagUpdateRequest(pydantic.BaseModel):
+class FlagUpdateRequest(pydantic.BaseModel):
     name: str
     description: typing.Optional[str]
     enabled: typing.Optional[bool]

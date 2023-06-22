@@ -6,7 +6,7 @@ import typing
 T_Result = typing.TypeVar("T_Result")
 
 
-class constraintComparisonType(str, enum.Enum):
+class ConstraintComparisonType(str, enum.Enum):
     """
     The default is UNKNOWN_COMPARISON_TYPE
     """
@@ -25,13 +25,13 @@ class constraintComparisonType(str, enum.Enum):
         boolean_comparison_type: typing.Callable[[], T_Result],
         datetime_comparison_type: typing.Callable[[], T_Result],
     ) -> T_Result:
-        if self is constraintComparisonType.UNKNOWN_COMPARISON_TYPE:
+        if self is ConstraintComparisonType.UNKNOWN_COMPARISON_TYPE:
             return unknown_comparison_type()
-        if self is constraintComparisonType.STRING_COMPARISON_TYPE:
+        if self is ConstraintComparisonType.STRING_COMPARISON_TYPE:
             return string_comparison_type()
-        if self is constraintComparisonType.NUMBER_COMPARISON_TYPE:
+        if self is ConstraintComparisonType.NUMBER_COMPARISON_TYPE:
             return number_comparison_type()
-        if self is constraintComparisonType.BOOLEAN_COMPARISON_TYPE:
+        if self is ConstraintComparisonType.BOOLEAN_COMPARISON_TYPE:
             return boolean_comparison_type()
-        if self is constraintComparisonType.DATETIME_COMPARISON_TYPE:
+        if self is ConstraintComparisonType.DATETIME_COMPARISON_TYPE:
             return datetime_comparison_type()

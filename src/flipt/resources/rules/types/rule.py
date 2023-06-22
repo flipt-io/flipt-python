@@ -6,14 +6,14 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from ...distributions.types.distribution import distribution
+from ...distributions.types.distribution import Distribution
 
 
-class rule(pydantic.BaseModel):
+class Rule(pydantic.BaseModel):
     id: str
     flag_key: str = pydantic.Field(alias="flagKey")
     segment_key: str = pydantic.Field(alias="segmentKey")
-    distributions: typing.List[distribution]
+    distributions: typing.List[Distribution]
     rank: int
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")

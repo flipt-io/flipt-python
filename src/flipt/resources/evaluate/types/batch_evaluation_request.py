@@ -6,12 +6,12 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .evaluation_request import evaluationRequest
+from .evaluation_request import EvaluationRequest
 
 
-class batchEvaluationRequest(pydantic.BaseModel):
+class BatchEvaluationRequest(pydantic.BaseModel):
     request_id: typing.Optional[str] = pydantic.Field(alias="requestId")
-    requests: typing.List[evaluationRequest]
+    requests: typing.List[EvaluationRequest]
     exclude_not_found: typing.Optional[bool] = pydantic.Field(alias="excludeNotFound")
 
     def json(self, **kwargs: typing.Any) -> str:

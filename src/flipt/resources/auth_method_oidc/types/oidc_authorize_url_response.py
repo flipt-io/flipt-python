@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class oidcAuthorizeURLResponse(pydantic.BaseModel):
+class OidcAuthorizeUrlResponse(pydantic.BaseModel):
     authorize_url: str = pydantic.Field(alias="authorizeUrl")
 
     def json(self, **kwargs: typing.Any) -> str:

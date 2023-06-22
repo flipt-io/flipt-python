@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class distributionUpdateRequest(pydantic.BaseModel):
+class DistributionUpdateRequest(pydantic.BaseModel):
     variant_id: str = pydantic.Field(alias="variantId")
     rollout: float
 

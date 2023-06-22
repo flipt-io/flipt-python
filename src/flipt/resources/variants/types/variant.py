@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class variant(pydantic.BaseModel):
+class Variant(pydantic.BaseModel):
     id: str
     flag_key: str = pydantic.Field(alias="flagKey")
     key: str

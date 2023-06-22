@@ -11,10 +11,10 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from .types.flag import flag
-from .types.flag_create_request import flagCreateRequest
-from .types.flag_list import flagList
-from .types.flag_update_request import flagUpdateRequest
+from .types.flag import Flag
+from .types.flag_create_request import FlagCreateRequest
+from .types.flag_list import FlagList
+from .types.flag_update_request import FlagUpdateRequest
 
 
 class FlagsClient:
@@ -31,7 +31,7 @@ class FlagsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
-    ) -> flagList:
+    ) -> FlagList:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags"),
@@ -39,16 +39,17 @@ class FlagsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(flagList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(FlagList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, namespace_key: str, *, request: flagCreateRequest) -> flag:
+    def create(self, namespace_key: str, *, request: FlagCreateRequest) -> Flag:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags"),
@@ -56,25 +57,27 @@ class FlagsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(flag, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Flag, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, namespace_key: str, key: str) -> flag:
+    def get(self, namespace_key: str, key: str) -> Flag:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(flag, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Flag, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -88,6 +91,7 @@ class FlagsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -97,7 +101,7 @@ class FlagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, namespace_key: str, key: str, *, request: flagUpdateRequest) -> flag:
+    def update(self, namespace_key: str, key: str, *, request: FlagUpdateRequest) -> Flag:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"),
@@ -105,9 +109,10 @@ class FlagsClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(flag, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Flag, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -129,7 +134,7 @@ class AsyncFlagsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
-    ) -> flagList:
+    ) -> FlagList:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -138,16 +143,17 @@ class AsyncFlagsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(flagList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(FlagList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create(self, namespace_key: str, *, request: flagCreateRequest) -> flag:
+    async def create(self, namespace_key: str, *, request: FlagCreateRequest) -> Flag:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
@@ -156,16 +162,17 @@ class AsyncFlagsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(flag, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Flag, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, namespace_key: str, key: str) -> flag:
+    async def get(self, namespace_key: str, key: str) -> Flag:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -173,9 +180,10 @@ class AsyncFlagsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(flag, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Flag, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -190,6 +198,7 @@ class AsyncFlagsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return
@@ -199,7 +208,7 @@ class AsyncFlagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, namespace_key: str, key: str, *, request: flagUpdateRequest) -> flag:
+    async def update(self, namespace_key: str, key: str, *, request: FlagUpdateRequest) -> Flag:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
@@ -208,9 +217,10 @@ class AsyncFlagsClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(flag, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Flag, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

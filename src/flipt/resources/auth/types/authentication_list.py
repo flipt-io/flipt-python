@@ -6,11 +6,11 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .authentication import authentication
+from .authentication import Authentication
 
 
-class authenticationList(pydantic.BaseModel):
-    authentications: typing.List[authentication]
+class AuthenticationList(pydantic.BaseModel):
+    authentications: typing.List[Authentication]
     next_page_token: str = pydantic.Field(alias="nextPageToken")
 
     def json(self, **kwargs: typing.Any) -> str:

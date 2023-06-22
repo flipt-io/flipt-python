@@ -2,8 +2,6 @@
 
 import typing
 
-from backports.cached_property import cached_property
-
 from .environment import FliptApiEnvironment
 from .resources.auth.client import AsyncAuthClient, AuthClient
 from .resources.auth_method_k_8_s.client import AsyncAuthMethodK8SClient, AuthMethodK8SClient
@@ -25,54 +23,18 @@ class FliptApi:
     ):
         self._environment = environment
         self._token = token
-
-    @cached_property
-    def auth_method_k_8_s(self) -> AuthMethodK8SClient:
-        return AuthMethodK8SClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def auth_method_oidc(self) -> AuthMethodOidcClient:
-        return AuthMethodOidcClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def auth_method_token(self) -> AuthMethodTokenClient:
-        return AuthMethodTokenClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def auth(self) -> AuthClient:
-        return AuthClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def constraints(self) -> ConstraintsClient:
-        return ConstraintsClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def distributions(self) -> DistributionsClient:
-        return DistributionsClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def evaluate(self) -> EvaluateClient:
-        return EvaluateClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def flags(self) -> FlagsClient:
-        return FlagsClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def namespaces(self) -> NamespacesClient:
-        return NamespacesClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def rules(self) -> RulesClient:
-        return RulesClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def segments(self) -> SegmentsClient:
-        return SegmentsClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def variants(self) -> VariantsClient:
-        return VariantsClient(environment=self._environment, token=self._token)
+        self.auth_method_k_8_s = AuthMethodK8SClient(environment=self._environment, token=self._token)
+        self.auth_method_oidc = AuthMethodOidcClient(environment=self._environment, token=self._token)
+        self.auth_method_token = AuthMethodTokenClient(environment=self._environment, token=self._token)
+        self.auth = AuthClient(environment=self._environment, token=self._token)
+        self.constraints = ConstraintsClient(environment=self._environment, token=self._token)
+        self.distributions = DistributionsClient(environment=self._environment, token=self._token)
+        self.evaluate = EvaluateClient(environment=self._environment, token=self._token)
+        self.flags = FlagsClient(environment=self._environment, token=self._token)
+        self.namespaces = NamespacesClient(environment=self._environment, token=self._token)
+        self.rules = RulesClient(environment=self._environment, token=self._token)
+        self.segments = SegmentsClient(environment=self._environment, token=self._token)
+        self.variants = VariantsClient(environment=self._environment, token=self._token)
 
 
 class AsyncFliptApi:
@@ -81,51 +43,15 @@ class AsyncFliptApi:
     ):
         self._environment = environment
         self._token = token
-
-    @cached_property
-    def auth_method_k_8_s(self) -> AsyncAuthMethodK8SClient:
-        return AsyncAuthMethodK8SClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def auth_method_oidc(self) -> AsyncAuthMethodOidcClient:
-        return AsyncAuthMethodOidcClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def auth_method_token(self) -> AsyncAuthMethodTokenClient:
-        return AsyncAuthMethodTokenClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def auth(self) -> AsyncAuthClient:
-        return AsyncAuthClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def constraints(self) -> AsyncConstraintsClient:
-        return AsyncConstraintsClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def distributions(self) -> AsyncDistributionsClient:
-        return AsyncDistributionsClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def evaluate(self) -> AsyncEvaluateClient:
-        return AsyncEvaluateClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def flags(self) -> AsyncFlagsClient:
-        return AsyncFlagsClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def namespaces(self) -> AsyncNamespacesClient:
-        return AsyncNamespacesClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def rules(self) -> AsyncRulesClient:
-        return AsyncRulesClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def segments(self) -> AsyncSegmentsClient:
-        return AsyncSegmentsClient(environment=self._environment, token=self._token)
-
-    @cached_property
-    def variants(self) -> AsyncVariantsClient:
-        return AsyncVariantsClient(environment=self._environment, token=self._token)
+        self.auth_method_k_8_s = AsyncAuthMethodK8SClient(environment=self._environment, token=self._token)
+        self.auth_method_oidc = AsyncAuthMethodOidcClient(environment=self._environment, token=self._token)
+        self.auth_method_token = AsyncAuthMethodTokenClient(environment=self._environment, token=self._token)
+        self.auth = AsyncAuthClient(environment=self._environment, token=self._token)
+        self.constraints = AsyncConstraintsClient(environment=self._environment, token=self._token)
+        self.distributions = AsyncDistributionsClient(environment=self._environment, token=self._token)
+        self.evaluate = AsyncEvaluateClient(environment=self._environment, token=self._token)
+        self.flags = AsyncFlagsClient(environment=self._environment, token=self._token)
+        self.namespaces = AsyncNamespacesClient(environment=self._environment, token=self._token)
+        self.rules = AsyncRulesClient(environment=self._environment, token=self._token)
+        self.segments = AsyncSegmentsClient(environment=self._environment, token=self._token)
+        self.variants = AsyncVariantsClient(environment=self._environment, token=self._token)

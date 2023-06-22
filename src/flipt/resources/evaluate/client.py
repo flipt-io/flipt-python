@@ -11,10 +11,10 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from .types.batch_evaluation_request import batchEvaluationRequest
-from .types.batch_evaluation_response import batchEvaluationResponse
-from .types.evaluation_request import evaluationRequest
-from .types.evaluation_response import evaluationResponse
+from .types.batch_evaluation_request import BatchEvaluationRequest
+from .types.batch_evaluation_response import BatchEvaluationResponse
+from .types.evaluation_request import EvaluationRequest
+from .types.evaluation_response import EvaluationResponse
 
 
 class EvaluateClient:
@@ -24,7 +24,7 @@ class EvaluateClient:
         self._environment = environment
         self._token = token
 
-    def evaluate(self, namespace_key: str, *, request: evaluationRequest) -> evaluationResponse:
+    def evaluate(self, namespace_key: str, *, request: EvaluationRequest) -> EvaluationResponse:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/evaluate"),
@@ -32,16 +32,17 @@ class EvaluateClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(evaluationResponse, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(EvaluationResponse, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def batch_evaluate(self, namespace_key: str, *, request: batchEvaluationRequest) -> batchEvaluationResponse:
+    def batch_evaluate(self, namespace_key: str, *, request: BatchEvaluationRequest) -> BatchEvaluationResponse:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/batch-evaluate"),
@@ -49,9 +50,10 @@ class EvaluateClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(batchEvaluationResponse, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(BatchEvaluationResponse, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -66,7 +68,7 @@ class AsyncEvaluateClient:
         self._environment = environment
         self._token = token
 
-    async def evaluate(self, namespace_key: str, *, request: evaluationRequest) -> evaluationResponse:
+    async def evaluate(self, namespace_key: str, *, request: EvaluationRequest) -> EvaluationResponse:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
@@ -75,16 +77,17 @@ class AsyncEvaluateClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(evaluationResponse, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(EvaluationResponse, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def batch_evaluate(self, namespace_key: str, *, request: batchEvaluationRequest) -> batchEvaluationResponse:
+    async def batch_evaluate(self, namespace_key: str, *, request: BatchEvaluationRequest) -> BatchEvaluationResponse:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
@@ -95,9 +98,10 @@ class AsyncEvaluateClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(batchEvaluationResponse, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(BatchEvaluationResponse, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

@@ -11,10 +11,10 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from .types.namespace import namespace
-from .types.namespace_create_request import namespaceCreateRequest
-from .types.namespace_list import namespaceList
-from .types.namespace_update_request import namespaceUpdateRequest
+from .types.namespace import Namespace
+from .types.namespace_create_request import NamespaceCreateRequest
+from .types.namespace_list import NamespaceList
+from .types.namespace_update_request import NamespaceUpdateRequest
 
 
 class NamespacesClient:
@@ -30,7 +30,7 @@ class NamespacesClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
-    ) -> namespaceList:
+    ) -> NamespaceList:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/namespaces"),
@@ -38,16 +38,17 @@ class NamespacesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(namespaceList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(NamespaceList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, *, request: namespaceCreateRequest) -> namespace:
+    def create(self, *, request: NamespaceCreateRequest) -> Namespace:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/namespaces"),
@@ -55,25 +56,27 @@ class NamespacesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(namespace, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Namespace, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, key: str) -> namespace:
+    def get(self, key: str) -> Namespace:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{key}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(namespace, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Namespace, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -87,6 +90,7 @@ class NamespacesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -96,7 +100,7 @@ class NamespacesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, key: str, *, request: namespaceUpdateRequest) -> namespace:
+    def update(self, key: str, *, request: NamespaceUpdateRequest) -> Namespace:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{key}"),
@@ -104,9 +108,10 @@ class NamespacesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(namespace, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Namespace, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -127,7 +132,7 @@ class AsyncNamespacesClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
-    ) -> namespaceList:
+    ) -> NamespaceList:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -136,16 +141,17 @@ class AsyncNamespacesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(namespaceList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(NamespaceList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create(self, *, request: namespaceCreateRequest) -> namespace:
+    async def create(self, *, request: NamespaceCreateRequest) -> Namespace:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
@@ -154,16 +160,17 @@ class AsyncNamespacesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(namespace, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Namespace, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, key: str) -> namespace:
+    async def get(self, key: str) -> Namespace:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -171,9 +178,10 @@ class AsyncNamespacesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(namespace, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Namespace, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -188,6 +196,7 @@ class AsyncNamespacesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return
@@ -197,7 +206,7 @@ class AsyncNamespacesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, key: str, *, request: namespaceUpdateRequest) -> namespace:
+    async def update(self, key: str, *, request: NamespaceUpdateRequest) -> Namespace:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
@@ -206,9 +215,10 @@ class AsyncNamespacesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(namespace, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Namespace, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

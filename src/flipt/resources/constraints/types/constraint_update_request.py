@@ -6,11 +6,11 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .constraint_comparison_type import constraintComparisonType
+from .constraint_comparison_type import ConstraintComparisonType
 
 
-class constraintUpdateRequest(pydantic.BaseModel):
-    type: constraintComparisonType
+class ConstraintUpdateRequest(pydantic.BaseModel):
+    type: ConstraintComparisonType
     property: str
     operator: str
     value: typing.Optional[str]

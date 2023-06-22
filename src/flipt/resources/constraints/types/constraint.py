@@ -6,13 +6,13 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .constraint_comparison_type import constraintComparisonType
+from .constraint_comparison_type import ConstraintComparisonType
 
 
-class constraint(pydantic.BaseModel):
+class Constraint(pydantic.BaseModel):
     id: str
     segment_key: str = pydantic.Field(alias="segmentKey")
-    type: constraintComparisonType
+    type: ConstraintComparisonType
     property: str
     operator: str
     value: str

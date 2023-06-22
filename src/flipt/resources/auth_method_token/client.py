@@ -12,7 +12,10 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from ..auth.types.authentication_token import authenticationToken
+from ..auth.types.authentication_token import AuthenticationToken
+
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
 
 
 class AuthMethodTokenClient:
@@ -23,18 +26,22 @@ class AuthMethodTokenClient:
         self._token = token
 
     def create_token(
-        self, *, name: str, description: str, expires_at: typing.Optional[dt.datetime] = None
-    ) -> authenticationToken:
+        self, *, name: str, description: str, expires_at: typing.Optional[dt.datetime] = OMIT
+    ) -> AuthenticationToken:
+        _request: typing.Dict[str, typing.Any] = {"name": name, "description": description}
+        if expires_at is not OMIT:
+            _request["expiresAt"] = expires_at
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/method/token"),
-            json=jsonable_encoder({"name": name, "description": description, "expiresAt": expires_at}),
+            json=jsonable_encoder(_request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authenticationToken, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AuthenticationToken, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -50,19 +57,23 @@ class AsyncAuthMethodTokenClient:
         self._token = token
 
     async def create_token(
-        self, *, name: str, description: str, expires_at: typing.Optional[dt.datetime] = None
-    ) -> authenticationToken:
+        self, *, name: str, description: str, expires_at: typing.Optional[dt.datetime] = OMIT
+    ) -> AuthenticationToken:
+        _request: typing.Dict[str, typing.Any] = {"name": name, "description": description}
+        if expires_at is not OMIT:
+            _request["expiresAt"] = expires_at
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/method/token"),
-                json=jsonable_encoder({"name": name, "description": description, "expiresAt": expires_at}),
+                json=jsonable_encoder(_request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authenticationToken, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AuthenticationToken, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

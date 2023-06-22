@@ -12,8 +12,11 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from .types.authentication import authentication
-from .types.authentication_list import authenticationList
+from .types.authentication import Authentication
+from .types.authentication_list import AuthenticationList
+
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
 
 
 class AuthClient:
@@ -23,32 +26,34 @@ class AuthClient:
         self._environment = environment
         self._token = token
 
-    def list_tokens(self) -> authenticationList:
+    def list_tokens(self) -> AuthenticationList:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/tokens"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authenticationList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AuthenticationList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_token(self, id: str) -> authentication:
+    def get_token(self, id: str) -> Authentication:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/tokens/{id}"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authentication, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Authentication, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -62,6 +67,7 @@ class AuthClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -71,30 +77,35 @@ class AuthClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_self(self) -> authentication:
+    def get_self(self) -> Authentication:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self"),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authentication, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Authentication, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def expire_self(self, *, expires_at: typing.Optional[dt.datetime] = None) -> None:
+    def expire_self(self, *, expires_at: typing.Optional[dt.datetime] = OMIT) -> None:
+        _request: typing.Dict[str, typing.Any] = {}
+        if expires_at is not OMIT:
+            _request["expiresAt"] = expires_at
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self/expire"),
-            json=jsonable_encoder({"expiresAt": expires_at}),
+            json=jsonable_encoder(_request),
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -112,7 +123,7 @@ class AsyncAuthClient:
         self._environment = environment
         self._token = token
 
-    async def list_tokens(self) -> authenticationList:
+    async def list_tokens(self) -> AuthenticationList:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -120,16 +131,17 @@ class AsyncAuthClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authenticationList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AuthenticationList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_token(self, id: str) -> authentication:
+    async def get_token(self, id: str) -> Authentication:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -137,9 +149,10 @@ class AsyncAuthClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authentication, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Authentication, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -154,6 +167,7 @@ class AsyncAuthClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return
@@ -163,7 +177,7 @@ class AsyncAuthClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_self(self) -> authentication:
+    async def get_self(self) -> Authentication:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -171,24 +185,29 @@ class AsyncAuthClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authentication, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Authentication, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def expire_self(self, *, expires_at: typing.Optional[dt.datetime] = None) -> None:
+    async def expire_self(self, *, expires_at: typing.Optional[dt.datetime] = OMIT) -> None:
+        _request: typing.Dict[str, typing.Any] = {}
+        if expires_at is not OMIT:
+            _request["expiresAt"] = expires_at
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
                 urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self/expire"),
-                json=jsonable_encoder({"expiresAt": expires_at}),
+                json=jsonable_encoder(_request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return

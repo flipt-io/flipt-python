@@ -11,7 +11,7 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from ..auth.types.authentication_token import authenticationToken
+from ..auth.types.authentication_token import AuthenticationToken
 
 
 class AuthMethodK8SClient:
@@ -21,7 +21,7 @@ class AuthMethodK8SClient:
         self._environment = environment
         self._token = token
 
-    def verify_service_account(self, *, service_account_token: str) -> authenticationToken:
+    def verify_service_account(self, *, service_account_token: str) -> AuthenticationToken:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/method/kubernetes/serviceaccount"),
@@ -29,9 +29,10 @@ class AuthMethodK8SClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authenticationToken, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AuthenticationToken, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -46,7 +47,7 @@ class AsyncAuthMethodK8SClient:
         self._environment = environment
         self._token = token
 
-    async def verify_service_account(self, *, service_account_token: str) -> authenticationToken:
+    async def verify_service_account(self, *, service_account_token: str) -> AuthenticationToken:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
@@ -55,9 +56,10 @@ class AsyncAuthMethodK8SClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(authenticationToken, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AuthenticationToken, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

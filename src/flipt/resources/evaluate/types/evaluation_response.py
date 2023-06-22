@@ -6,10 +6,10 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .evaluation_reason import evaluationReason
+from .evaluation_reason import EvaluationReason
 
 
-class evaluationResponse(pydantic.BaseModel):
+class EvaluationResponse(pydantic.BaseModel):
     request_id: str = pydantic.Field(alias="requestId")
     entity_id: str = pydantic.Field(alias="entityId")
     request_context: typing.Dict[str, str] = pydantic.Field(alias="requestContext")
@@ -20,7 +20,7 @@ class evaluationResponse(pydantic.BaseModel):
     value: str
     request_duration_millis: float = pydantic.Field(alias="requestDurationMillis")
     attachment: str
-    reason: evaluationReason
+    reason: EvaluationReason
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

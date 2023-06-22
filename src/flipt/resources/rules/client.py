@@ -11,11 +11,11 @@ from ...core.api_error import ApiError
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FliptApiEnvironment
-from .types.rule import rule
-from .types.rule_create_request import ruleCreateRequest
-from .types.rule_list import ruleList
-from .types.rule_order_request import ruleOrderRequest
-from .types.rule_update_request import ruleUpdateRequest
+from .types.rule import Rule
+from .types.rule_create_request import RuleCreateRequest
+from .types.rule_list import RuleList
+from .types.rule_order_request import RuleOrderRequest
+from .types.rule_update_request import RuleUpdateRequest
 
 
 class RulesClient:
@@ -33,7 +33,7 @@ class RulesClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
-    ) -> ruleList:
+    ) -> RuleList:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(
@@ -43,16 +43,17 @@ class RulesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(ruleList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(RuleList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, namespace_key: str, flag_key: str, *, request: ruleCreateRequest) -> rule:
+    def create(self, namespace_key: str, flag_key: str, *, request: RuleCreateRequest) -> Rule:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(
@@ -62,16 +63,17 @@ class RulesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(rule, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Rule, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def order(self, namespace_key: str, flag_key: str, *, request: ruleOrderRequest) -> None:
+    def order(self, namespace_key: str, flag_key: str, *, request: RuleOrderRequest) -> None:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(
@@ -81,6 +83,7 @@ class RulesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -90,7 +93,7 @@ class RulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, namespace_key: str, flag_key: str, id: str) -> rule:
+    def get(self, namespace_key: str, flag_key: str, id: str) -> Rule:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(
@@ -99,9 +102,10 @@ class RulesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(rule, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Rule, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -117,6 +121,7 @@ class RulesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -126,7 +131,7 @@ class RulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, namespace_key: str, flag_key: str, id: str, *, request: ruleUpdateRequest) -> None:
+    def update(self, namespace_key: str, flag_key: str, id: str, *, request: RuleUpdateRequest) -> None:
         _response = httpx.request(
             "PUT",
             urllib.parse.urljoin(
@@ -136,6 +141,7 @@ class RulesClient:
             headers=remove_none_from_headers(
                 {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
             ),
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -161,7 +167,7 @@ class AsyncRulesClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
-    ) -> ruleList:
+    ) -> RuleList:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -172,16 +178,17 @@ class AsyncRulesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(ruleList, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(RuleList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create(self, namespace_key: str, flag_key: str, *, request: ruleCreateRequest) -> rule:
+    async def create(self, namespace_key: str, flag_key: str, *, request: RuleCreateRequest) -> Rule:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
@@ -192,16 +199,17 @@ class AsyncRulesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(rule, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Rule, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def order(self, namespace_key: str, flag_key: str, *, request: ruleOrderRequest) -> None:
+    async def order(self, namespace_key: str, flag_key: str, *, request: RuleOrderRequest) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
@@ -212,6 +220,7 @@ class AsyncRulesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return
@@ -221,7 +230,7 @@ class AsyncRulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, namespace_key: str, flag_key: str, id: str) -> rule:
+    async def get(self, namespace_key: str, flag_key: str, id: str) -> Rule:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
@@ -231,9 +240,10 @@ class AsyncRulesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(rule, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(Rule, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -250,6 +260,7 @@ class AsyncRulesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return
@@ -259,7 +270,7 @@ class AsyncRulesClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, namespace_key: str, flag_key: str, id: str, *, request: ruleUpdateRequest) -> None:
+    async def update(self, namespace_key: str, flag_key: str, id: str, *, request: RuleUpdateRequest) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "PUT",
@@ -270,6 +281,7 @@ class AsyncRulesClient:
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
                 ),
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return

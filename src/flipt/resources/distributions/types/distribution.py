@@ -8,7 +8,7 @@ import pydantic
 from ....core.datetime_utils import serialize_datetime
 
 
-class distribution(pydantic.BaseModel):
+class Distribution(pydantic.BaseModel):
     id: str
     rule_id: str = pydantic.Field(alias="ruleId")
     variant_id: str = pydantic.Field(alias="variantId")

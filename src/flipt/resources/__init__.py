@@ -15,76 +15,76 @@ from . import (
     segments,
     variants,
 )
-from .auth import authentication, authenticationList, authenticationMethod, authenticationToken
-from .auth_method_oidc import oidcAuthorizeURLResponse, oidcCallbackResponse
+from .auth import Authentication, AuthenticationList, AuthenticationMethod, AuthenticationToken
+from .auth_method_oidc import OidcAuthorizeUrlResponse, OidcCallbackResponse
 from .commons import Pageable
-from .constraints import constraint, constraintComparisonType, constraintCreateRequest, constraintUpdateRequest
-from .distributions import distribution, distributionCreateRequest, distributionUpdateRequest
+from .constraints import Constraint, ConstraintComparisonType, ConstraintCreateRequest, ConstraintUpdateRequest
+from .distributions import Distribution, DistributionCreateRequest, DistributionUpdateRequest
 from .evaluate import (
-    batchEvaluationRequest,
-    batchEvaluationResponse,
-    evaluationReason,
-    evaluationRequest,
-    evaluationResponse,
+    BatchEvaluationRequest,
+    BatchEvaluationResponse,
+    EvaluationReason,
+    EvaluationRequest,
+    EvaluationResponse,
 )
-from .flags import flag, flagCreateRequest, flagList, flagUpdateRequest
-from .namespaces import namespace, namespaceCreateRequest, namespaceList, namespaceUpdateRequest
-from .rules import rule, ruleCreateRequest, ruleList, ruleOrderRequest, ruleUpdateRequest
-from .segments import segment, segmentCreateRequest, segmentList, segmentMatchType, segmentUpdateRequest
-from .variants import variant, variantCreateRequest, variantUpdateRequest
+from .flags import Flag, FlagCreateRequest, FlagList, FlagUpdateRequest
+from .namespaces import Namespace, NamespaceCreateRequest, NamespaceList, NamespaceUpdateRequest
+from .rules import Rule, RuleCreateRequest, RuleList, RuleOrderRequest, RuleUpdateRequest
+from .segments import Segment, SegmentCreateRequest, SegmentList, SegmentMatchType, SegmentUpdateRequest
+from .variants import Variant, VariantCreateRequest, VariantUpdateRequest
 
 __all__ = [
+    "Authentication",
+    "AuthenticationList",
+    "AuthenticationMethod",
+    "AuthenticationToken",
+    "BatchEvaluationRequest",
+    "BatchEvaluationResponse",
+    "Constraint",
+    "ConstraintComparisonType",
+    "ConstraintCreateRequest",
+    "ConstraintUpdateRequest",
+    "Distribution",
+    "DistributionCreateRequest",
+    "DistributionUpdateRequest",
+    "EvaluationReason",
+    "EvaluationRequest",
+    "EvaluationResponse",
+    "Flag",
+    "FlagCreateRequest",
+    "FlagList",
+    "FlagUpdateRequest",
+    "Namespace",
+    "NamespaceCreateRequest",
+    "NamespaceList",
+    "NamespaceUpdateRequest",
+    "OidcAuthorizeUrlResponse",
+    "OidcCallbackResponse",
     "Pageable",
+    "Rule",
+    "RuleCreateRequest",
+    "RuleList",
+    "RuleOrderRequest",
+    "RuleUpdateRequest",
+    "Segment",
+    "SegmentCreateRequest",
+    "SegmentList",
+    "SegmentMatchType",
+    "SegmentUpdateRequest",
+    "Variant",
+    "VariantCreateRequest",
+    "VariantUpdateRequest",
     "auth",
     "auth_method_k_8_s",
     "auth_method_oidc",
     "auth_method_token",
-    "authentication",
-    "authenticationList",
-    "authenticationMethod",
-    "authenticationToken",
-    "batchEvaluationRequest",
-    "batchEvaluationResponse",
     "commons",
-    "constraint",
-    "constraintComparisonType",
-    "constraintCreateRequest",
-    "constraintUpdateRequest",
     "constraints",
-    "distribution",
-    "distributionCreateRequest",
-    "distributionUpdateRequest",
     "distributions",
     "evaluate",
-    "evaluationReason",
-    "evaluationRequest",
-    "evaluationResponse",
-    "flag",
-    "flagCreateRequest",
-    "flagList",
-    "flagUpdateRequest",
     "flags",
-    "namespace",
-    "namespaceCreateRequest",
-    "namespaceList",
-    "namespaceUpdateRequest",
     "namespaces",
-    "oidcAuthorizeURLResponse",
-    "oidcCallbackResponse",
-    "rule",
-    "ruleCreateRequest",
-    "ruleList",
-    "ruleOrderRequest",
-    "ruleUpdateRequest",
     "rules",
-    "segment",
-    "segmentCreateRequest",
-    "segmentList",
-    "segmentMatchType",
-    "segmentUpdateRequest",
     "segments",
-    "variant",
-    "variantCreateRequest",
-    "variantUpdateRequest",
     "variants",
 ]

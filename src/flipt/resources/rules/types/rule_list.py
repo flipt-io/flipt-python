@@ -6,11 +6,11 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .rule import rule
+from .rule import Rule
 
 
-class ruleList(pydantic.BaseModel):
-    rules: typing.List[rule]
+class RuleList(pydantic.BaseModel):
+    rules: typing.List[Rule]
     next_page_token: str = pydantic.Field(alias="nextPageToken")
     total_count: int = pydantic.Field(alias="totalCount")
 

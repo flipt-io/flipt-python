@@ -6,18 +6,18 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from ...constraints.types.constraint import constraint
-from .segment_match_type import segmentMatchType
+from ...constraints.types.constraint import Constraint
+from .segment_match_type import SegmentMatchType
 
 
-class segment(pydantic.BaseModel):
+class Segment(pydantic.BaseModel):
     key: str
     name: str
     description: str
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
-    constraints: typing.List[constraint]
-    match_type: segmentMatchType = pydantic.Field(alias="matchType")
+    constraints: typing.List[Constraint]
+    match_type: SegmentMatchType = pydantic.Field(alias="matchType")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
