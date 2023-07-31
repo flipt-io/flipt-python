@@ -6,6 +6,7 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
+from .flag_type import FlagType
 
 
 class FlagCreateRequest(pydantic.BaseModel):
@@ -13,6 +14,7 @@ class FlagCreateRequest(pydantic.BaseModel):
     name: str
     description: typing.Optional[str]
     enabled: typing.Optional[bool]
+    type: FlagType
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

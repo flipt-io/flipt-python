@@ -11,6 +11,7 @@ from .segment_match_type import SegmentMatchType
 
 
 class Segment(pydantic.BaseModel):
+    namespace_key: str = pydantic.Field(alias="namespaceKey")
     key: str
     name: str
     description: str

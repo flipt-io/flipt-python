@@ -11,6 +11,7 @@ from ...distributions.types.distribution import Distribution
 
 class Rule(pydantic.BaseModel):
     id: str
+    namespace_key: str = pydantic.Field(alias="namespaceKey")
     flag_key: str = pydantic.Field(alias="flagKey")
     segment_key: str = pydantic.Field(alias="segmentKey")
     distributions: typing.List[Distribution]

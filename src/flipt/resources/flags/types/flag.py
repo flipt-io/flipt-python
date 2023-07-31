@@ -7,9 +7,11 @@ import pydantic
 
 from ....core.datetime_utils import serialize_datetime
 from ...variants.types.variant import Variant
+from .flag_type import FlagType
 
 
 class Flag(pydantic.BaseModel):
+    namespace_key: str = pydantic.Field(alias="namespaceKey")
     key: str
     name: str
     description: str
@@ -17,6 +19,7 @@ class Flag(pydantic.BaseModel):
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
     variants: typing.List[Variant]
+    type: FlagType
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

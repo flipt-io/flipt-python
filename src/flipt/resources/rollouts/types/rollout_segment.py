@@ -6,20 +6,11 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .constraint_comparison_type import ConstraintComparisonType
 
 
-class Constraint(pydantic.BaseModel):
-    id: str
-    namespace_key: str = pydantic.Field(alias="namespaceKey")
+class RolloutSegment(pydantic.BaseModel):
     segment_key: str = pydantic.Field(alias="segmentKey")
-    type: ConstraintComparisonType
-    property: str
-    operator: str
-    value: str
-    description: str
-    created_at: dt.datetime = pydantic.Field(alias="createdAt")
-    updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
+    value: bool
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

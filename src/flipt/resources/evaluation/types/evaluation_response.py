@@ -6,20 +6,17 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .constraint_comparison_type import ConstraintComparisonType
+from .boolean_evaluation_response import BooleanEvaluationResponse
+from .error_evaluation_response import ErrorEvaluationResponse
+from .evaluation_response_type import EvaluationResponseType
+from .variant_evaluation_response import VariantEvaluationResponse
 
 
-class Constraint(pydantic.BaseModel):
-    id: str
-    namespace_key: str = pydantic.Field(alias="namespaceKey")
-    segment_key: str = pydantic.Field(alias="segmentKey")
-    type: ConstraintComparisonType
-    property: str
-    operator: str
-    value: str
-    description: str
-    created_at: dt.datetime = pydantic.Field(alias="createdAt")
-    updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
+class EvaluationResponse(pydantic.BaseModel):
+    type: EvaluationResponseType
+    boolean_response: typing.Optional[BooleanEvaluationResponse]
+    variant_response: typing.Optional[VariantEvaluationResponse]
+    error_response: typing.Optional[ErrorEvaluationResponse]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -31,5 +28,4 @@ class Constraint(pydantic.BaseModel):
 
     class Config:
         frozen = True
-        allow_population_by_field_name = True
         json_encoders = {dt.datetime: serialize_datetime}

@@ -10,6 +10,7 @@ from ....core.datetime_utils import serialize_datetime
 
 class Variant(pydantic.BaseModel):
     id: str
+    namespace_key: str = pydantic.Field(alias="namespaceKey")
     flag_key: str = pydantic.Field(alias="flagKey")
     key: str
     name: str

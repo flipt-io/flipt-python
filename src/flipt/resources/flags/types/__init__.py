@@ -3,6 +3,7 @@
 from .flag import Flag
 from .flag_create_request import FlagCreateRequest
 from .flag_list import FlagList
+from .flag_type import FlagType
 from .flag_update_request import FlagUpdateRequest
 
-__all__ = ["Flag", "FlagCreateRequest", "FlagList", "FlagUpdateRequest"]
+__all__ = ["Flag", "FlagCreateRequest", "FlagList", "FlagType", "FlagUpdateRequest"]

@@ -6,20 +6,15 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
-from .constraint_comparison_type import ConstraintComparisonType
+from .rollout_segment import RolloutSegment
+from .rollout_threshold import RolloutThreshold
 
 
-class Constraint(pydantic.BaseModel):
-    id: str
-    namespace_key: str = pydantic.Field(alias="namespaceKey")
-    segment_key: str = pydantic.Field(alias="segmentKey")
-    type: ConstraintComparisonType
-    property: str
-    operator: str
-    value: str
-    description: str
-    created_at: dt.datetime = pydantic.Field(alias="createdAt")
-    updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
+class RolloutCreateRequest(pydantic.BaseModel):
+    rank: int
+    description: typing.Optional[str]
+    segment: typing.Optional[RolloutSegment]
+    threshold: typing.Optional[RolloutThreshold]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -31,5 +26,4 @@ class Constraint(pydantic.BaseModel):
 
     class Config:
         frozen = True
-        allow_population_by_field_name = True
         json_encoders = {dt.datetime: serialize_datetime}

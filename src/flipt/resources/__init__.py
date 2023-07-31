@@ -9,8 +9,10 @@ from . import (
     constraints,
     distributions,
     evaluate,
+    evaluation,
     flags,
     namespaces,
+    rollouts,
     rules,
     segments,
     variants,
@@ -27,8 +29,18 @@ from .evaluate import (
     EvaluationRequest,
     EvaluationResponse,
 )
-from .flags import Flag, FlagCreateRequest, FlagList, FlagUpdateRequest
+from .flags import Flag, FlagCreateRequest, FlagList, FlagType, FlagUpdateRequest
 from .namespaces import Namespace, NamespaceCreateRequest, NamespaceList, NamespaceUpdateRequest
+from .rollouts import (
+    Rollout,
+    RolloutCreateRequest,
+    RolloutList,
+    RolloutOrderRequest,
+    RolloutSegment,
+    RolloutThreshold,
+    RolloutType,
+    RolloutUpdateRequest,
+)
 from .rules import Rule, RuleCreateRequest, RuleList, RuleOrderRequest, RuleUpdateRequest
 from .segments import Segment, SegmentCreateRequest, SegmentList, SegmentMatchType, SegmentUpdateRequest
 from .variants import Variant, VariantCreateRequest, VariantUpdateRequest
@@ -53,6 +65,7 @@ __all__ = [
     "Flag",
     "FlagCreateRequest",
     "FlagList",
+    "FlagType",
     "FlagUpdateRequest",
     "Namespace",
     "NamespaceCreateRequest",
@@ -61,6 +74,14 @@ __all__ = [
     "OidcAuthorizeUrlResponse",
     "OidcCallbackResponse",
     "Pageable",
+    "Rollout",
+    "RolloutCreateRequest",
+    "RolloutList",
+    "RolloutOrderRequest",
+    "RolloutSegment",
+    "RolloutThreshold",
+    "RolloutType",
+    "RolloutUpdateRequest",
     "Rule",
     "RuleCreateRequest",
     "RuleList",
@@ -82,8 +103,10 @@ __all__ = [
     "constraints",
     "distributions",
     "evaluate",
+    "evaluation",
     "flags",
     "namespaces",
+    "rollouts",
     "rules",
     "segments",
     "variants",

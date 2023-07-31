@@ -10,8 +10,10 @@ from .resources.auth_method_token.client import AsyncAuthMethodTokenClient, Auth
 from .resources.constraints.client import AsyncConstraintsClient, ConstraintsClient
 from .resources.distributions.client import AsyncDistributionsClient, DistributionsClient
 from .resources.evaluate.client import AsyncEvaluateClient, EvaluateClient
+from .resources.evaluation.client import AsyncEvaluationClient, EvaluationClient
 from .resources.flags.client import AsyncFlagsClient, FlagsClient
 from .resources.namespaces.client import AsyncNamespacesClient, NamespacesClient
+from .resources.rollouts.client import AsyncRolloutsClient, RolloutsClient
 from .resources.rules.client import AsyncRulesClient, RulesClient
 from .resources.segments.client import AsyncSegmentsClient, SegmentsClient
 from .resources.variants.client import AsyncVariantsClient, VariantsClient
@@ -23,6 +25,7 @@ class FliptApi:
     ):
         self._environment = environment
         self._token = token
+        self.evaluation = EvaluationClient(environment=self._environment, token=self._token)
         self.auth_method_k_8_s = AuthMethodK8SClient(environment=self._environment, token=self._token)
         self.auth_method_oidc = AuthMethodOidcClient(environment=self._environment, token=self._token)
         self.auth_method_token = AuthMethodTokenClient(environment=self._environment, token=self._token)
@@ -32,6 +35,7 @@ class FliptApi:
         self.evaluate = EvaluateClient(environment=self._environment, token=self._token)
         self.flags = FlagsClient(environment=self._environment, token=self._token)
         self.namespaces = NamespacesClient(environment=self._environment, token=self._token)
+        self.rollouts = RolloutsClient(environment=self._environment, token=self._token)
         self.rules = RulesClient(environment=self._environment, token=self._token)
         self.segments = SegmentsClient(environment=self._environment, token=self._token)
         self.variants = VariantsClient(environment=self._environment, token=self._token)
@@ -43,6 +47,7 @@ class AsyncFliptApi:
     ):
         self._environment = environment
         self._token = token
+        self.evaluation = AsyncEvaluationClient(environment=self._environment, token=self._token)
         self.auth_method_k_8_s = AsyncAuthMethodK8SClient(environment=self._environment, token=self._token)
         self.auth_method_oidc = AsyncAuthMethodOidcClient(environment=self._environment, token=self._token)
         self.auth_method_token = AsyncAuthMethodTokenClient(environment=self._environment, token=self._token)
@@ -52,6 +57,7 @@ class AsyncFliptApi:
         self.evaluate = AsyncEvaluateClient(environment=self._environment, token=self._token)
         self.flags = AsyncFlagsClient(environment=self._environment, token=self._token)
         self.namespaces = AsyncNamespacesClient(environment=self._environment, token=self._token)
+        self.rollouts = AsyncRolloutsClient(environment=self._environment, token=self._token)
         self.rules = AsyncRulesClient(environment=self._environment, token=self._token)
         self.segments = AsyncSegmentsClient(environment=self._environment, token=self._token)
         self.variants = AsyncVariantsClient(environment=self._environment, token=self._token)
