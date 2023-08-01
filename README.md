@@ -32,6 +32,24 @@ flag = fliptApi.flags.create("default", request=fcr)
 print(flag)
 ```
 
+### Evaluation
+
+In [v1.24.0](https://github.com/flipt-io/flipt/releases/tag/v1.24.0) of Flipt server, we added a new set of Evaluation API endpoints to allow evaluating of both boolean and multivariate flags. This SDK supports both sets of evaluation APIs (old and new) as of [v0.2.7](https://github.com/flipt-io/flipt-python/releases/tag/0.2.7).
+
+The previous API endpoints at `/api/v1/evaluate` have been deprecated and may be removed in a future release. We recommend using the new Evaluation API at `/evaluate/v1/` for all new projects.
+
+For more information on the new Evaluation API, please see the [API documentation](https://www.flipt.io/docs/reference/overview#v1-24-0) or blog post on [Flipt v1.24.0](https://www.flipt.io/blog/boolean-flags-and-rollouts).
+
+```python
+fliptApi = FliptApi()
+
+er = evaluationRequest(namespace_key="defaut", flag_key="new-flag", entity_id="user-123", context={"platform": "ios"})
+resp = fliptApi.evaluation.variant(er)
+
+# Print out the evaluation response.
+print(resp)
+```
+
 ## Contributing
 
 While we value open-source contributions to this SDK, this library is generated programmatically. Additions made directly to this library would have to be moved over to our generation code, otherwise they would be overwritten upon the next generated release. Feel free to open a PR as a proof of concept, but know that we will not be able to merge it as-is. We suggest [opening an issue](https://github.com/flipt-io/flipt-python/issues) first to discuss with us!
