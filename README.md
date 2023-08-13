@@ -23,7 +23,9 @@ pip install flipt=={version}
 from flipt import flagCreateRequest
 from flipt.client import FliptApi
 
-fliptApi = FliptApi()
+# customize to point to your instance of Flipt
+FLIPT_API="http://localhost:8080"
+fliptApi = FliptApi(base_url=FLIPT_API)
 
 fcr = flagCreateRequest(key="new-flag", name="NewFlag", enabled=True)
 flag = fliptApi.flags.create("default", request=fcr)
