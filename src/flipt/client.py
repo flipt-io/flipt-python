@@ -2,6 +2,9 @@
 
 import typing
 
+import httpx
+
+from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .environment import FliptApiEnvironment
 from .resources.auth.client import AsyncAuthClient, AuthClient
 from .resources.auth_method_k_8_s.client import AsyncAuthMethodK8SClient, AuthMethodK8SClient
@@ -21,43 +24,63 @@ from .resources.variants.client import AsyncVariantsClient, VariantsClient
 
 class FliptApi:
     def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+        self,
+        *,
+        base_url: typing.Optional[str] = None,
+        environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION,
+        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        timeout: typing.Optional[float] = 60
     ):
-        self._environment = environment
-        self._token = token
-        self.evaluation = EvaluationClient(environment=self._environment, token=self._token)
-        self.auth_method_k_8_s = AuthMethodK8SClient(environment=self._environment, token=self._token)
-        self.auth_method_oidc = AuthMethodOidcClient(environment=self._environment, token=self._token)
-        self.auth_method_token = AuthMethodTokenClient(environment=self._environment, token=self._token)
-        self.auth = AuthClient(environment=self._environment, token=self._token)
-        self.constraints = ConstraintsClient(environment=self._environment, token=self._token)
-        self.distributions = DistributionsClient(environment=self._environment, token=self._token)
-        self.evaluate = EvaluateClient(environment=self._environment, token=self._token)
-        self.flags = FlagsClient(environment=self._environment, token=self._token)
-        self.namespaces = NamespacesClient(environment=self._environment, token=self._token)
-        self.rollouts = RolloutsClient(environment=self._environment, token=self._token)
-        self.rules = RulesClient(environment=self._environment, token=self._token)
-        self.segments = SegmentsClient(environment=self._environment, token=self._token)
-        self.variants = VariantsClient(environment=self._environment, token=self._token)
+        if base_url is None and environment is None:
+            raise Exception("Please pass in either base_url or environment to construct the client")
+        self._client_wrapper = SyncClientWrapper(
+            base_url=base_url if base_url is not None else environment.value,
+            token=token,
+            httpx_client=httpx.Client(timeout=timeout),
+        )
+        self.evaluation = EvaluationClient(client_wrapper=self._client_wrapper)
+        self.auth_method_k_8_s = AuthMethodK8SClient(client_wrapper=self._client_wrapper)
+        self.auth_method_oidc = AuthMethodOidcClient(client_wrapper=self._client_wrapper)
+        self.auth_method_token = AuthMethodTokenClient(client_wrapper=self._client_wrapper)
+        self.auth = AuthClient(client_wrapper=self._client_wrapper)
+        self.constraints = ConstraintsClient(client_wrapper=self._client_wrapper)
+        self.distributions = DistributionsClient(client_wrapper=self._client_wrapper)
+        self.evaluate = EvaluateClient(client_wrapper=self._client_wrapper)
+        self.flags = FlagsClient(client_wrapper=self._client_wrapper)
+        self.namespaces = NamespacesClient(client_wrapper=self._client_wrapper)
+        self.rollouts = RolloutsClient(client_wrapper=self._client_wrapper)
+        self.rules = RulesClient(client_wrapper=self._client_wrapper)
+        self.segments = SegmentsClient(client_wrapper=self._client_wrapper)
+        self.variants = VariantsClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncFliptApi:
     def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
+        self,
+        *,
+        base_url: typing.Optional[str] = None,
+        environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION,
+        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        timeout: typing.Optional[float] = 60
     ):
-        self._environment = environment
-        self._token = token
-        self.evaluation = AsyncEvaluationClient(environment=self._environment, token=self._token)
-        self.auth_method_k_8_s = AsyncAuthMethodK8SClient(environment=self._environment, token=self._token)
-        self.auth_method_oidc = AsyncAuthMethodOidcClient(environment=self._environment, token=self._token)
-        self.auth_method_token = AsyncAuthMethodTokenClient(environment=self._environment, token=self._token)
-        self.auth = AsyncAuthClient(environment=self._environment, token=self._token)
-        self.constraints = AsyncConstraintsClient(environment=self._environment, token=self._token)
-        self.distributions = AsyncDistributionsClient(environment=self._environment, token=self._token)
-        self.evaluate = AsyncEvaluateClient(environment=self._environment, token=self._token)
-        self.flags = AsyncFlagsClient(environment=self._environment, token=self._token)
-        self.namespaces = AsyncNamespacesClient(environment=self._environment, token=self._token)
-        self.rollouts = AsyncRolloutsClient(environment=self._environment, token=self._token)
-        self.rules = AsyncRulesClient(environment=self._environment, token=self._token)
-        self.segments = AsyncSegmentsClient(environment=self._environment, token=self._token)
-        self.variants = AsyncVariantsClient(environment=self._environment, token=self._token)
+        if base_url is None and environment is None:
+            raise Exception("Please pass in either base_url or environment to construct the client")
+        self._client_wrapper = AsyncClientWrapper(
+            base_url=base_url if base_url is not None else environment.value,
+            token=token,
+            httpx_client=httpx.AsyncClient(timeout=timeout),
+        )
+        self.evaluation = AsyncEvaluationClient(client_wrapper=self._client_wrapper)
+        self.auth_method_k_8_s = AsyncAuthMethodK8SClient(client_wrapper=self._client_wrapper)
+        self.auth_method_oidc = AsyncAuthMethodOidcClient(client_wrapper=self._client_wrapper)
+        self.auth_method_token = AsyncAuthMethodTokenClient(client_wrapper=self._client_wrapper)
+        self.auth = AsyncAuthClient(client_wrapper=self._client_wrapper)
+        self.constraints = AsyncConstraintsClient(client_wrapper=self._client_wrapper)
+        self.distributions = AsyncDistributionsClient(client_wrapper=self._client_wrapper)
+        self.evaluate = AsyncEvaluateClient(client_wrapper=self._client_wrapper)
+        self.flags = AsyncFlagsClient(client_wrapper=self._client_wrapper)
+        self.namespaces = AsyncNamespacesClient(client_wrapper=self._client_wrapper)
+        self.rollouts = AsyncRolloutsClient(client_wrapper=self._client_wrapper)
+        self.rules = AsyncRulesClient(client_wrapper=self._client_wrapper)
+        self.segments = AsyncSegmentsClient(client_wrapper=self._client_wrapper)
+        self.variants = AsyncVariantsClient(client_wrapper=self._client_wrapper)

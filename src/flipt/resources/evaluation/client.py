@@ -4,35 +4,35 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
-from ...environment import FliptApiEnvironment
 from .types.batch_evaluation_request import BatchEvaluationRequest
 from .types.batch_evaluation_response import BatchEvaluationResponse
 from .types.boolean_evaluation_response import BooleanEvaluationResponse
 from .types.evaluation_request import EvaluationRequest
 from .types.variant_evaluation_response import VariantEvaluationResponse
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class EvaluationClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def boolean(self, *, request: EvaluationRequest) -> BooleanEvaluationResponse:
-        _response = httpx.request(
+        """
+        Parameters:
+            - request: EvaluationRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", "evaluate/v1/boolean"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "evaluate/v1/boolean"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -44,13 +44,15 @@ class EvaluationClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def variant(self, *, request: EvaluationRequest) -> VariantEvaluationResponse:
-        _response = httpx.request(
+        """
+        Parameters:
+            - request: EvaluationRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", "evaluate/v1/variant"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "evaluate/v1/variant"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -62,13 +64,15 @@ class EvaluationClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def batch(self, *, request: BatchEvaluationRequest) -> BatchEvaluationResponse:
-        _response = httpx.request(
+        """
+        Parameters:
+            - request: BatchEvaluationRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", "evaluate/v1/batch"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "evaluate/v1/batch"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -81,23 +85,21 @@ class EvaluationClient:
 
 
 class AsyncEvaluationClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def boolean(self, *, request: EvaluationRequest) -> BooleanEvaluationResponse:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", "evaluate/v1/boolean"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - request: EvaluationRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "evaluate/v1/boolean"),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(BooleanEvaluationResponse, _response.json())  # type: ignore
         try:
@@ -107,16 +109,17 @@ class AsyncEvaluationClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def variant(self, *, request: EvaluationRequest) -> VariantEvaluationResponse:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", "evaluate/v1/variant"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - request: EvaluationRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "evaluate/v1/variant"),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(VariantEvaluationResponse, _response.json())  # type: ignore
         try:
@@ -126,16 +129,17 @@ class AsyncEvaluationClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def batch(self, *, request: BatchEvaluationRequest) -> BatchEvaluationResponse:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", "evaluate/v1/batch"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - request: BatchEvaluationRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "evaluate/v1/batch"),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(BatchEvaluationResponse, _response.json())  # type: ignore
         try:

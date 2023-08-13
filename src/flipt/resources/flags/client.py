@@ -4,25 +4,24 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
-from ...environment import FliptApiEnvironment
+from ...core.remove_none_from_dict import remove_none_from_dict
 from .types.flag import Flag
 from .types.flag_create_request import FlagCreateRequest
 from .types.flag_list import FlagList
 from .types.flag_update_request import FlagUpdateRequest
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class FlagsClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def list(
         self,
@@ -32,13 +31,21 @@ class FlagsClient:
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
     ) -> FlagList:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - limit: typing.Optional[int].
+
+            - offset: typing.Optional[int].
+
+            - page_token: typing.Optional[str].
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags"),
-            params={"limit": limit, "offset": offset, "pageToken": page_token},
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags"),
+            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -50,13 +57,17 @@ class FlagsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def create(self, namespace_key: str, *, request: FlagCreateRequest) -> Flag:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - request: FlagCreateRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -68,12 +79,18 @@ class FlagsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get(self, namespace_key: str, key: str) -> Flag:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - key: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"
             ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -85,12 +102,18 @@ class FlagsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete(self, namespace_key: str, key: str) -> None:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - key: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"
             ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -102,13 +125,21 @@ class FlagsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def update(self, namespace_key: str, key: str, *, request: FlagUpdateRequest) -> Flag:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - key: str.
+
+            - request: FlagUpdateRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"),
-            json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"
             ),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -121,11 +152,8 @@ class FlagsClient:
 
 
 class AsyncFlagsClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def list(
         self,
@@ -135,16 +163,23 @@ class AsyncFlagsClient:
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
     ) -> FlagList:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags"),
-                params={"limit": limit, "offset": offset, "pageToken": page_token},
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - limit: typing.Optional[int].
+
+            - offset: typing.Optional[int].
+
+            - page_token: typing.Optional[str].
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags"),
+            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(FlagList, _response.json())  # type: ignore
         try:
@@ -154,16 +189,19 @@ class AsyncFlagsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def create(self, namespace_key: str, *, request: FlagCreateRequest) -> Flag:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - request: FlagCreateRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags"),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Flag, _response.json())  # type: ignore
         try:
@@ -173,15 +211,20 @@ class AsyncFlagsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get(self, namespace_key: str, key: str) -> Flag:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - key: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"
+            ),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Flag, _response.json())  # type: ignore
         try:
@@ -191,15 +234,20 @@ class AsyncFlagsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete(self, namespace_key: str, key: str) -> None:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "DELETE",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - key: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"
+            ),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return
         try:
@@ -209,16 +257,23 @@ class AsyncFlagsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update(self, namespace_key: str, key: str, *, request: FlagUpdateRequest) -> Flag:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "PUT",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - key: str.
+
+            - request: FlagUpdateRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "PUT",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"
+            ),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Flag, _response.json())  # type: ignore
         try:

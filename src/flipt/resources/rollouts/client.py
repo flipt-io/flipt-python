@@ -4,26 +4,25 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
-from ...environment import FliptApiEnvironment
+from ...core.remove_none_from_dict import remove_none_from_dict
 from .types.rollout import Rollout
 from .types.rollout_create_request import RolloutCreateRequest
 from .types.rollout_list import RolloutList
 from .types.rollout_order_request import RolloutOrderRequest
 from .types.rollout_update_request import RolloutUpdateRequest
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class RolloutsClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def list(
         self,
@@ -34,15 +33,26 @@ class RolloutsClient:
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
     ) -> RolloutList:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - limit: typing.Optional[int].
+
+            - offset: typing.Optional[int].
+
+            - page_token: typing.Optional[str].
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
-                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts",
             ),
-            params={"limit": limit, "offset": offset, "pageToken": page_token},
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -54,15 +64,22 @@ class RolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def create(self, namespace_key: str, flag_key: str, *, request: RolloutCreateRequest) -> Rollout:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - request: RolloutCreateRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(
-                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts",
             ),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -74,15 +91,22 @@ class RolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def order(self, namespace_key: str, flag_key: str, *, request: RolloutOrderRequest) -> None:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - request: RolloutOrderRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "PUT",
             urllib.parse.urljoin(
-                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/order"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/order",
             ),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -94,14 +118,21 @@ class RolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get(self, namespace_key: str, flag_key: str, id: str) -> Rollout:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
-                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}",
             ),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -113,14 +144,21 @@ class RolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete(self, namespace_key: str, flag_key: str, id: str) -> None:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "DELETE",
             urllib.parse.urljoin(
-                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}",
             ),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -132,15 +170,24 @@ class RolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def update(self, namespace_key: str, flag_key: str, id: str, *, request: RolloutUpdateRequest) -> None:
-        _response = httpx.request(
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - id: str.
+
+            - request: RolloutUpdateRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "PUT",
             urllib.parse.urljoin(
-                f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}",
             ),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -153,11 +200,8 @@ class RolloutsClient:
 
 
 class AsyncRolloutsClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def list(
         self,
@@ -168,18 +212,28 @@ class AsyncRolloutsClient:
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
     ) -> RolloutList:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts"
-                ),
-                params={"limit": limit, "offset": offset, "pageToken": page_token},
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - limit: typing.Optional[int].
+
+            - offset: typing.Optional[int].
+
+            - page_token: typing.Optional[str].
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts",
+            ),
+            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(RolloutList, _response.json())  # type: ignore
         try:
@@ -189,18 +243,24 @@ class AsyncRolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def create(self, namespace_key: str, flag_key: str, *, request: RolloutCreateRequest) -> Rollout:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts"
-                ),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - request: RolloutCreateRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts",
+            ),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Rollout, _response.json())  # type: ignore
         try:
@@ -210,18 +270,24 @@ class AsyncRolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def order(self, namespace_key: str, flag_key: str, *, request: RolloutOrderRequest) -> None:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "PUT",
-                urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/order"
-                ),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - request: RolloutOrderRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "PUT",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/order",
+            ),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return
         try:
@@ -231,17 +297,23 @@ class AsyncRolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get(self, namespace_key: str, flag_key: str, id: str) -> Rollout:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}"
-                ),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}",
+            ),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Rollout, _response.json())  # type: ignore
         try:
@@ -251,17 +323,23 @@ class AsyncRolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete(self, namespace_key: str, flag_key: str, id: str) -> None:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "DELETE",
-                urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}"
-                ),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}",
+            ),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return
         try:
@@ -271,18 +349,26 @@ class AsyncRolloutsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update(self, namespace_key: str, flag_key: str, id: str, *, request: RolloutUpdateRequest) -> None:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "PUT",
-                urllib.parse.urljoin(
-                    f"{self._environment.value}/", f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}"
-                ),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - namespace_key: str.
+
+            - flag_key: str.
+
+            - id: str.
+
+            - request: RolloutUpdateRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "PUT",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}",
+            ),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return
         try:

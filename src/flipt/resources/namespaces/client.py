@@ -4,25 +4,24 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
-from ...environment import FliptApiEnvironment
+from ...core.remove_none_from_dict import remove_none_from_dict
 from .types.namespace import Namespace
 from .types.namespace_create_request import NamespaceCreateRequest
 from .types.namespace_list import NamespaceList
 from .types.namespace_update_request import NamespaceUpdateRequest
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class NamespacesClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def list(
         self,
@@ -31,13 +30,19 @@ class NamespacesClient:
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
     ) -> NamespaceList:
-        _response = httpx.request(
+        """
+        Parameters:
+            - limit: typing.Optional[int].
+
+            - offset: typing.Optional[int].
+
+            - page_token: typing.Optional[str].
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/namespaces"),
-            params={"limit": limit, "offset": offset, "pageToken": page_token},
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/namespaces"),
+            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -49,13 +54,15 @@ class NamespacesClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def create(self, *, request: NamespaceCreateRequest) -> Namespace:
-        _response = httpx.request(
+        """
+        Parameters:
+            - request: NamespaceCreateRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/namespaces"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/namespaces"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -67,12 +74,14 @@ class NamespacesClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get(self, key: str) -> Namespace:
-        _response = httpx.request(
+        """
+        Parameters:
+            - key: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{key}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{key}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -84,12 +93,14 @@ class NamespacesClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete(self, key: str) -> None:
-        _response = httpx.request(
+        """
+        Parameters:
+            - key: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{key}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{key}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -101,13 +112,17 @@ class NamespacesClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def update(self, key: str, *, request: NamespaceUpdateRequest) -> Namespace:
-        _response = httpx.request(
+        """
+        Parameters:
+            - key: str.
+
+            - request: NamespaceUpdateRequest.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{key}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{key}"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -120,11 +135,8 @@ class NamespacesClient:
 
 
 class AsyncNamespacesClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def list(
         self,
@@ -133,16 +145,21 @@ class AsyncNamespacesClient:
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
     ) -> NamespaceList:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/namespaces"),
-                params={"limit": limit, "offset": offset, "pageToken": page_token},
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - limit: typing.Optional[int].
+
+            - offset: typing.Optional[int].
+
+            - page_token: typing.Optional[str].
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/namespaces"),
+            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(NamespaceList, _response.json())  # type: ignore
         try:
@@ -152,16 +169,17 @@ class AsyncNamespacesClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def create(self, *, request: NamespaceCreateRequest) -> Namespace:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", "api/v1/namespaces"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - request: NamespaceCreateRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/namespaces"),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Namespace, _response.json())  # type: ignore
         try:
@@ -171,15 +189,16 @@ class AsyncNamespacesClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get(self, key: str) -> Namespace:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{key}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - key: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{key}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Namespace, _response.json())  # type: ignore
         try:
@@ -189,15 +208,16 @@ class AsyncNamespacesClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete(self, key: str) -> None:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "DELETE",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{key}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - key: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{key}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return
         try:
@@ -207,16 +227,19 @@ class AsyncNamespacesClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update(self, key: str, *, request: NamespaceUpdateRequest) -> Namespace:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "PUT",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"api/v1/namespaces/{key}"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - key: str.
+
+            - request: NamespaceUpdateRequest.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "PUT",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{key}"),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Namespace, _response.json())  # type: ignore
         try:

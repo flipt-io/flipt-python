@@ -5,13 +5,11 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
-from ...environment import FliptApiEnvironment
 from .types.authentication import Authentication
 from .types.authentication_list import AuthenticationList
 
@@ -20,19 +18,14 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class AuthClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def list_tokens(self) -> AuthenticationList:
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/tokens"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "auth/v1/tokens"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -44,12 +37,14 @@ class AuthClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_token(self, id: str) -> Authentication:
-        _response = httpx.request(
+        """
+        Parameters:
+            - id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/tokens/{id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"auth/v1/tokens/{id}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -61,12 +56,14 @@ class AuthClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete_token(self, id: str) -> None:
-        _response = httpx.request(
+        """
+        Parameters:
+            - id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/tokens/{id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"auth/v1/tokens/{id}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -78,12 +75,10 @@ class AuthClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_self(self) -> Authentication:
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "auth/v1/self"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -95,16 +90,18 @@ class AuthClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def expire_self(self, *, expires_at: typing.Optional[dt.datetime] = OMIT) -> None:
+        """
+        Parameters:
+            - expires_at: typing.Optional[dt.datetime].
+        """
         _request: typing.Dict[str, typing.Any] = {}
         if expires_at is not OMIT:
             _request["expiresAt"] = expires_at
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self/expire"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "auth/v1/self/expire"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -117,22 +114,16 @@ class AuthClient:
 
 
 class AsyncAuthClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def list_tokens(self) -> AuthenticationList:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/tokens"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "auth/v1/tokens"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AuthenticationList, _response.json())  # type: ignore
         try:
@@ -142,15 +133,16 @@ class AsyncAuthClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_token(self, id: str) -> Authentication:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/tokens/{id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"auth/v1/tokens/{id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Authentication, _response.json())  # type: ignore
         try:
@@ -160,15 +152,16 @@ class AsyncAuthClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete_token(self, id: str) -> None:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "DELETE",
-                urllib.parse.urljoin(f"{self._environment.value}/", f"auth/v1/tokens/{id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"auth/v1/tokens/{id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return
         try:
@@ -178,15 +171,12 @@ class AsyncAuthClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_self(self) -> Authentication:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "auth/v1/self"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Authentication, _response.json())  # type: ignore
         try:
@@ -196,19 +186,20 @@ class AsyncAuthClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def expire_self(self, *, expires_at: typing.Optional[dt.datetime] = OMIT) -> None:
+        """
+        Parameters:
+            - expires_at: typing.Optional[dt.datetime].
+        """
         _request: typing.Dict[str, typing.Any] = {}
         if expires_at is not OMIT:
             _request["expiresAt"] = expires_at
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "PUT",
-                urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/self/expire"),
-                json=jsonable_encoder(_request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "PUT",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "auth/v1/self/expire"),
+            json=jsonable_encoder(_request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return
         try:

@@ -5,13 +5,11 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
-from ...environment import FliptApiEnvironment
 from ..auth.types.authentication_token import AuthenticationToken
 
 # this is used as the default value for optional parameters
@@ -19,25 +17,28 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class AuthMethodTokenClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def create_token(
         self, *, name: str, description: str, expires_at: typing.Optional[dt.datetime] = OMIT
     ) -> AuthenticationToken:
+        """
+        Parameters:
+            - name: str.
+
+            - description: str.
+
+            - expires_at: typing.Optional[dt.datetime].
+        """
         _request: typing.Dict[str, typing.Any] = {"name": name, "description": description}
         if expires_at is not OMIT:
             _request["expiresAt"] = expires_at
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/method/token"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "auth/v1/method/token"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -50,28 +51,30 @@ class AuthMethodTokenClient:
 
 
 class AsyncAuthMethodTokenClient:
-    def __init__(
-        self, *, environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION, token: typing.Optional[str] = None
-    ):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def create_token(
         self, *, name: str, description: str, expires_at: typing.Optional[dt.datetime] = OMIT
     ) -> AuthenticationToken:
+        """
+        Parameters:
+            - name: str.
+
+            - description: str.
+
+            - expires_at: typing.Optional[dt.datetime].
+        """
         _request: typing.Dict[str, typing.Any] = {"name": name, "description": description}
         if expires_at is not OMIT:
             _request["expiresAt"] = expires_at
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment.value}/", "auth/v1/method/token"),
-                json=jsonable_encoder(_request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "auth/v1/method/token"),
+            json=jsonable_encoder(_request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AuthenticationToken, _response.json())  # type: ignore
         try:
