@@ -37,11 +37,12 @@ from .rollouts import (
     RolloutList,
     RolloutOrderRequest,
     RolloutSegment,
+    RolloutSegmentOperator,
     RolloutThreshold,
     RolloutType,
     RolloutUpdateRequest,
 )
-from .rules import Rule, RuleCreateRequest, RuleList, RuleOrderRequest, RuleUpdateRequest
+from .rules import Rule, RuleCreateRequest, RuleList, RuleOrderRequest, RuleSegmentOperator, RuleUpdateRequest
 from .segments import Segment, SegmentCreateRequest, SegmentList, SegmentMatchType, SegmentUpdateRequest
 from .variants import Variant, VariantCreateRequest, VariantUpdateRequest
 
@@ -79,6 +80,7 @@ __all__ = [
     "RolloutList",
     "RolloutOrderRequest",
     "RolloutSegment",
+    "RolloutSegmentOperator",
     "RolloutThreshold",
     "RolloutType",
     "RolloutUpdateRequest",
@@ -86,6 +88,7 @@ __all__ = [
     "RuleCreateRequest",
     "RuleList",
     "RuleOrderRequest",
+    "RuleSegmentOperator",
     "RuleUpdateRequest",
     "Segment",
     "SegmentCreateRequest",

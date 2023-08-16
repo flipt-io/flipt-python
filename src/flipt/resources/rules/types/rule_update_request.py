@@ -6,10 +6,13 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
+from .rule_segment_operator import RuleSegmentOperator
 
 
 class RuleUpdateRequest(pydantic.BaseModel):
     segment_key: str = pydantic.Field(alias="segmentKey")
+    segment_keys: typing.Optional[typing.List[str]] = pydantic.Field(alias="segmentKeys")
+    segment_operator: typing.Optional[RuleSegmentOperator] = pydantic.Field(alias="segmentOperator")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
