@@ -4,6 +4,7 @@ from .rule import Rule
 from .rule_create_request import RuleCreateRequest
 from .rule_list import RuleList
 from .rule_order_request import RuleOrderRequest
+from .rule_segment_operator import RuleSegmentOperator
 from .rule_update_request import RuleUpdateRequest
 
-__all__ = ["Rule", "RuleCreateRequest", "RuleList", "RuleOrderRequest", "RuleUpdateRequest"]
+__all__ = ["Rule", "RuleCreateRequest", "RuleList", "RuleOrderRequest", "RuleSegmentOperator", "RuleUpdateRequest"]

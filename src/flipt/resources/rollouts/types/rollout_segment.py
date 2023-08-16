@@ -6,10 +6,13 @@ import typing
 import pydantic
 
 from ....core.datetime_utils import serialize_datetime
+from .rollout_segment_operator import RolloutSegmentOperator
 
 
 class RolloutSegment(pydantic.BaseModel):
     segment_key: str = pydantic.Field(alias="segmentKey")
+    segment_keys: typing.Optional[typing.List[str]] = pydantic.Field(alias="segmentKeys")
+    segment_operator: typing.Optional[RolloutSegmentOperator] = pydantic.Field(alias="segmentOperator")
     value: bool
 
     def json(self, **kwargs: typing.Any) -> str:
