@@ -5,6 +5,7 @@ from .rollout_create_request import RolloutCreateRequest
 from .rollout_list import RolloutList
 from .rollout_order_request import RolloutOrderRequest
 from .rollout_segment import RolloutSegment
+from .rollout_segment_operator import RolloutSegmentOperator
 from .rollout_threshold import RolloutThreshold
 from .rollout_type import RolloutType
 from .rollout_update_request import RolloutUpdateRequest
@@ -15,6 +16,7 @@ __all__ = [
     "RolloutList",
     "RolloutOrderRequest",
     "RolloutSegment",
+    "RolloutSegmentOperator",
     "RolloutThreshold",
     "RolloutType",
     "RolloutUpdateRequest",
