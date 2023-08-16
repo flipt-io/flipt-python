@@ -7,6 +7,7 @@ import pydantic
 
 from ....core.datetime_utils import serialize_datetime
 from ...distributions.types.distribution import Distribution
+from .rule_segment_operator import RuleSegmentOperator
 
 
 class Rule(pydantic.BaseModel):
@@ -14,6 +15,8 @@ class Rule(pydantic.BaseModel):
     namespace_key: str = pydantic.Field(alias="namespaceKey")
     flag_key: str = pydantic.Field(alias="flagKey")
     segment_key: str = pydantic.Field(alias="segmentKey")
+    segment_keys: typing.Optional[typing.List[str]] = pydantic.Field(alias="segmentKeys")
+    segment_operator: RuleSegmentOperator = pydantic.Field(alias="segmentOperator")
     distributions: typing.List[Distribution]
     rank: int
     created_at: dt.datetime = pydantic.Field(alias="createdAt")

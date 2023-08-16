@@ -21,6 +21,7 @@ class EvaluationResponse(pydantic.BaseModel):
     request_duration_millis: float = pydantic.Field(alias="requestDurationMillis")
     attachment: str
     reason: EvaluationReason
+    segment_keys: typing.Optional[str] = pydantic.Field(alias="segmentKeys")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -14,9 +14,9 @@ from .variant_evaluation_response import VariantEvaluationResponse
 
 class EvaluationResponse(pydantic.BaseModel):
     type: EvaluationResponseType
-    boolean_response: typing.Optional[BooleanEvaluationResponse]
-    variant_response: typing.Optional[VariantEvaluationResponse]
-    error_response: typing.Optional[ErrorEvaluationResponse]
+    boolean_response: typing.Optional[BooleanEvaluationResponse] = pydantic.Field(alias="booleanResponse")
+    variant_response: typing.Optional[VariantEvaluationResponse] = pydantic.Field(alias="variantResponse")
+    error_response: typing.Optional[ErrorEvaluationResponse] = pydantic.Field(alias="errorResponse")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -28,4 +28,5 @@ class EvaluationResponse(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        allow_population_by_field_name = True
         json_encoders = {dt.datetime: serialize_datetime}
