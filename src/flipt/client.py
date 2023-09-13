@@ -31,10 +31,8 @@ class FliptApi:
         token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         timeout: typing.Optional[float] = 60
     ):
-        if base_url is None and environment is None:
-            raise Exception("Please pass in either base_url or environment to construct the client")
         self._client_wrapper = SyncClientWrapper(
-            base_url=base_url if base_url is not None else environment.value,
+            base_url=_get_base_url(base_url=base_url, environment=environment),
             token=token,
             httpx_client=httpx.Client(timeout=timeout),
         )
@@ -63,10 +61,8 @@ class AsyncFliptApi:
         token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         timeout: typing.Optional[float] = 60
     ):
-        if base_url is None and environment is None:
-            raise Exception("Please pass in either base_url or environment to construct the client")
         self._client_wrapper = AsyncClientWrapper(
-            base_url=base_url if base_url is not None else environment.value,
+            base_url=_get_base_url(base_url=base_url, environment=environment),
             token=token,
             httpx_client=httpx.AsyncClient(timeout=timeout),
         )
@@ -84,3 +80,12 @@ class AsyncFliptApi:
         self.rules = AsyncRulesClient(client_wrapper=self._client_wrapper)
         self.segments = AsyncSegmentsClient(client_wrapper=self._client_wrapper)
         self.variants = AsyncVariantsClient(client_wrapper=self._client_wrapper)
+
+
+def _get_base_url(*, base_url: typing.Optional[str] = None, environment: FliptApiEnvironment) -> str:
+    if base_url is not None:
+        return base_url
+    elif environment is not None:
+        return environment.value
+    else:
+        raise Exception("Please pass in either base_url or environment to construct the client")
