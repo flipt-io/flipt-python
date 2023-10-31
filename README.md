@@ -9,7 +9,7 @@ API documentation is available at <https://www.flipt.io/docs/reference/overview>
 
 ## Status
 
-This SDK status `hardening`, and there may be breaking changes between versions without a major version update. Therefore, we recommend pinning your installation of this package wherever necessary.
+This SDK status is `hardening`, and there may be breaking changes between versions without a major version update. Therefore, we recommend pinning your installation of this package wherever necessary.
 
 ## Install
 
