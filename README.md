@@ -1,7 +1,7 @@
 # Flipt Python SDK
 
 [![pypi](https://img.shields.io/pypi/v/flipt.svg)](https://pypi.org/project/flipt)
-![beta](https://img.shields.io/badge/status-beta-yellow)
+![hardening](https://img.shields.io/badge/status-hardening-orange)
 
 ## Documentation
 
@@ -9,11 +9,11 @@ API documentation is available at <https://www.flipt.io/docs/reference/overview>
 
 ## Status
 
-This SDK is in `beta`, and there may be breaking changes between versions without a major version update. Therefore, we recommend pinning your installation of this package wherever necessary.
+This SDK status `hardening`, and there may be breaking changes between versions without a major version update. Therefore, we recommend pinning your installation of this package wherever necessary.
 
 ## Install
 
-```
+```console
 pip install flipt=={version}
 ```
 
