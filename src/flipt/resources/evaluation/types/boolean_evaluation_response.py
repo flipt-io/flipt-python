@@ -3,14 +3,18 @@
 import datetime as dt
 import typing
 
-import pydantic
-
 from ....core.datetime_utils import serialize_datetime
 from .evaluation_reason import EvaluationReason
+
+try:
+    import pydantic.v1 as pydantic  # type: ignore
+except ImportError:
+    import pydantic  # type: ignore
 
 
 class BooleanEvaluationResponse(pydantic.BaseModel):
     request_id: str = pydantic.Field(alias="requestId")
+    flag_key: str = pydantic.Field(alias="flagKey")
     enabled: bool
     timestamp: dt.datetime
     request_duration_millis: float = pydantic.Field(alias="requestDurationMillis")

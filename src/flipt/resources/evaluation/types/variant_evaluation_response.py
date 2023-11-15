@@ -3,15 +3,19 @@
 import datetime as dt
 import typing
 
-import pydantic
-
 from ....core.datetime_utils import serialize_datetime
 from .evaluation_reason import EvaluationReason
+
+try:
+    import pydantic.v1 as pydantic  # type: ignore
+except ImportError:
+    import pydantic  # type: ignore
 
 
 class VariantEvaluationResponse(pydantic.BaseModel):
     request_id: str = pydantic.Field(alias="requestId")
     match: bool
+    flag_key: str = pydantic.Field(alias="flagKey")
     segment_keys: typing.List[str] = pydantic.Field(alias="segmentKeys")
     variant_key: str = pydantic.Field(alias="variantKey")
     variant_attachment: str = pydantic.Field(alias="variantAttachment")
