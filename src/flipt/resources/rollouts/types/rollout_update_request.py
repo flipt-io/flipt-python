@@ -3,11 +3,14 @@
 import datetime as dt
 import typing
 
-import pydantic
-
 from ....core.datetime_utils import serialize_datetime
 from .rollout_segment import RolloutSegment
 from .rollout_threshold import RolloutThreshold
+
+try:
+    import pydantic.v1 as pydantic  # type: ignore
+except ImportError:
+    import pydantic  # type: ignore
 
 
 class RolloutUpdateRequest(pydantic.BaseModel):

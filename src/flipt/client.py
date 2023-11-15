@@ -29,12 +29,13 @@ class FliptApi:
         base_url: typing.Optional[str] = None,
         environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION,
         token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
-        timeout: typing.Optional[float] = 60
+        timeout: typing.Optional[float] = 60,
+        httpx_client: typing.Optional[httpx.Client] = None
     ):
         self._client_wrapper = SyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             token=token,
-            httpx_client=httpx.Client(timeout=timeout),
+            httpx_client=httpx.Client(timeout=timeout) if httpx_client is None else httpx_client,
         )
         self.evaluation = EvaluationClient(client_wrapper=self._client_wrapper)
         self.auth_method_k_8_s = AuthMethodK8SClient(client_wrapper=self._client_wrapper)
@@ -59,12 +60,13 @@ class AsyncFliptApi:
         base_url: typing.Optional[str] = None,
         environment: FliptApiEnvironment = FliptApiEnvironment.PRODUCTION,
         token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
-        timeout: typing.Optional[float] = 60
+        timeout: typing.Optional[float] = 60,
+        httpx_client: typing.Optional[httpx.AsyncClient] = None
     ):
         self._client_wrapper = AsyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             token=token,
-            httpx_client=httpx.AsyncClient(timeout=timeout),
+            httpx_client=httpx.AsyncClient(timeout=timeout) if httpx_client is None else httpx_client,
         )
         self.evaluation = AsyncEvaluationClient(client_wrapper=self._client_wrapper)
         self.auth_method_k_8_s = AsyncAuthMethodK8SClient(client_wrapper=self._client_wrapper)

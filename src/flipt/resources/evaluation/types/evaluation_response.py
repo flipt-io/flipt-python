@@ -3,13 +3,16 @@
 import datetime as dt
 import typing
 
-import pydantic
-
 from ....core.datetime_utils import serialize_datetime
 from .boolean_evaluation_response import BooleanEvaluationResponse
 from .error_evaluation_response import ErrorEvaluationResponse
 from .evaluation_response_type import EvaluationResponseType
 from .variant_evaluation_response import VariantEvaluationResponse
+
+try:
+    import pydantic.v1 as pydantic  # type: ignore
+except ImportError:
+    import pydantic  # type: ignore
 
 
 class EvaluationResponse(pydantic.BaseModel):

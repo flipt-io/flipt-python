@@ -5,12 +5,15 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import pydantic
-
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ..auth.types.authentication_token import AuthenticationToken
+
+try:
+    import pydantic.v1 as pydantic  # type: ignore
+except ImportError:
+    import pydantic  # type: ignore
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -21,17 +24,26 @@ class AuthMethodTokenClient:
         self._client_wrapper = client_wrapper
 
     def create_token(
-        self, *, name: str, description: str, expires_at: typing.Optional[dt.datetime] = OMIT
+        self,
+        *,
+        name: str,
+        namespace_key: typing.Optional[str] = OMIT,
+        description: str,
+        expires_at: typing.Optional[dt.datetime] = OMIT,
     ) -> AuthenticationToken:
         """
         Parameters:
             - name: str.
+
+            - namespace_key: typing.Optional[str].
 
             - description: str.
 
             - expires_at: typing.Optional[dt.datetime].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name, "description": description}
+        if namespace_key is not OMIT:
+            _request["namespaceKey"] = namespace_key
         if expires_at is not OMIT:
             _request["expiresAt"] = expires_at
         _response = self._client_wrapper.httpx_client.request(
@@ -55,17 +67,26 @@ class AsyncAuthMethodTokenClient:
         self._client_wrapper = client_wrapper
 
     async def create_token(
-        self, *, name: str, description: str, expires_at: typing.Optional[dt.datetime] = OMIT
+        self,
+        *,
+        name: str,
+        namespace_key: typing.Optional[str] = OMIT,
+        description: str,
+        expires_at: typing.Optional[dt.datetime] = OMIT,
     ) -> AuthenticationToken:
         """
         Parameters:
             - name: str.
+
+            - namespace_key: typing.Optional[str].
 
             - description: str.
 
             - expires_at: typing.Optional[dt.datetime].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name, "description": description}
+        if namespace_key is not OMIT:
+            _request["namespaceKey"] = namespace_key
         if expires_at is not OMIT:
             _request["expiresAt"] = expires_at
         _response = await self._client_wrapper.httpx_client.request(
