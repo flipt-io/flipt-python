@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.13](https://github.com/flipt-io/flipt-python/compare/0.2.12...0.2.13) (2023-11-15)
+
+
+### Features
+
+* SDK regeneration ([#18](https://github.com/flipt-io/flipt-python/issues/18)) ([ed5e2e7](https://github.com/flipt-io/flipt-python/commit/ed5e2e73c9a1289d1a6c2de43f470453c21bda7d))
+
 ## [0.2.12](https://github.com/flipt-io/flipt-python/compare/0.2.10...0.2.12) (2023-10-03)
 
 
