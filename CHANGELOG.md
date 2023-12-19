@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.17](https://github.com/flipt-io/flipt-python/compare/0.2.13...0.2.17) (2023-12-19)
+
+
+### Miscellaneous Chores
+
+* release 0.2.17 ([089b549](https://github.com/flipt-io/flipt-python/commit/089b54979e539192756048ba1ffa2df307602e85))
+
 ## [0.2.13](https://github.com/flipt-io/flipt-python/compare/0.2.12...0.2.13) (2023-11-15)
 
 
