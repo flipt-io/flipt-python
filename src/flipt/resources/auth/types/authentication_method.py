@@ -15,6 +15,7 @@ class AuthenticationMethod(str, enum.Enum):
     METHOD_TOKEN = "METHOD_TOKEN"
     METHOD_OIDC = "METHOD_OIDC"
     METHOD_KUBERNETES = "METHOD_KUBERNETES"
+    METHOD_JWT = "METHOD_JWT"
 
     def visit(
         self,
@@ -22,6 +23,7 @@ class AuthenticationMethod(str, enum.Enum):
         method_token: typing.Callable[[], T_Result],
         method_oidc: typing.Callable[[], T_Result],
         method_kubernetes: typing.Callable[[], T_Result],
+        method_jwt: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is AuthenticationMethod.METHOD_NONE:
             return method_none()
@@ -31,3 +33,5 @@ class AuthenticationMethod(str, enum.Enum):
             return method_oidc()
         if self is AuthenticationMethod.METHOD_KUBERNETES:
             return method_kubernetes()
+        if self is AuthenticationMethod.METHOD_JWT:
+            return method_jwt()

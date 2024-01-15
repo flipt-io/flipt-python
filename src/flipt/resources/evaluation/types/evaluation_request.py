@@ -17,6 +17,7 @@ class EvaluationRequest(pydantic.BaseModel):
     flag_key: str = pydantic.Field(alias="flagKey")
     entity_id: str = pydantic.Field(alias="entityId")
     context: typing.Dict[str, str]
+    reference: typing.Optional[str]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
