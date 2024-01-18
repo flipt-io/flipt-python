@@ -33,6 +33,7 @@ class SegmentsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
+        reference: typing.Optional[str] = None,
     ) -> SegmentList:
         """
         Parameters:
@@ -43,13 +44,17 @@ class SegmentsClient:
             - offset: typing.Optional[int].
 
             - page_token: typing.Optional[str].
+
+            - reference: typing.Optional[str].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/segments"
             ),
-            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            params=remove_none_from_dict(
+                {"limit": limit, "offset": offset, "pageToken": page_token, "reference": reference}
+            ),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -85,18 +90,21 @@ class SegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, namespace_key: str, key: str) -> Segment:
+    def get(self, namespace_key: str, key: str, *, reference: typing.Optional[str] = None) -> Segment:
         """
         Parameters:
             - namespace_key: str.
 
             - key: str.
+
+            - reference: typing.Optional[str].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"
             ),
+            params=remove_none_from_dict({"reference": reference}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -169,6 +177,7 @@ class AsyncSegmentsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
+        reference: typing.Optional[str] = None,
     ) -> SegmentList:
         """
         Parameters:
@@ -179,13 +188,17 @@ class AsyncSegmentsClient:
             - offset: typing.Optional[int].
 
             - page_token: typing.Optional[str].
+
+            - reference: typing.Optional[str].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/segments"
             ),
-            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            params=remove_none_from_dict(
+                {"limit": limit, "offset": offset, "pageToken": page_token, "reference": reference}
+            ),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -221,18 +234,21 @@ class AsyncSegmentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, namespace_key: str, key: str) -> Segment:
+    async def get(self, namespace_key: str, key: str, *, reference: typing.Optional[str] = None) -> Segment:
         """
         Parameters:
             - namespace_key: str.
 
             - key: str.
+
+            - reference: typing.Optional[str].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/segments/{key}"
             ),
+            params=remove_none_from_dict({"reference": reference}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )

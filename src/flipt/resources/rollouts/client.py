@@ -35,6 +35,7 @@ class RolloutsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
+        reference: typing.Optional[str] = None,
     ) -> RolloutList:
         """
         Parameters:
@@ -47,6 +48,8 @@ class RolloutsClient:
             - offset: typing.Optional[int].
 
             - page_token: typing.Optional[str].
+
+            - reference: typing.Optional[str].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
@@ -54,7 +57,9 @@ class RolloutsClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts",
             ),
-            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            params=remove_none_from_dict(
+                {"limit": limit, "offset": offset, "pageToken": page_token, "reference": reference}
+            ),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -120,7 +125,7 @@ class RolloutsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, namespace_key: str, flag_key: str, id: str) -> Rollout:
+    def get(self, namespace_key: str, flag_key: str, id: str, *, reference: typing.Optional[str] = None) -> Rollout:
         """
         Parameters:
             - namespace_key: str.
@@ -128,6 +133,8 @@ class RolloutsClient:
             - flag_key: str.
 
             - id: str.
+
+            - reference: typing.Optional[str].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
@@ -135,6 +142,7 @@ class RolloutsClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}",
             ),
+            params=remove_none_from_dict({"reference": reference}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -214,6 +222,7 @@ class AsyncRolloutsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
+        reference: typing.Optional[str] = None,
     ) -> RolloutList:
         """
         Parameters:
@@ -226,6 +235,8 @@ class AsyncRolloutsClient:
             - offset: typing.Optional[int].
 
             - page_token: typing.Optional[str].
+
+            - reference: typing.Optional[str].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
@@ -233,7 +244,9 @@ class AsyncRolloutsClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts",
             ),
-            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            params=remove_none_from_dict(
+                {"limit": limit, "offset": offset, "pageToken": page_token, "reference": reference}
+            ),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -299,7 +312,9 @@ class AsyncRolloutsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, namespace_key: str, flag_key: str, id: str) -> Rollout:
+    async def get(
+        self, namespace_key: str, flag_key: str, id: str, *, reference: typing.Optional[str] = None
+    ) -> Rollout:
         """
         Parameters:
             - namespace_key: str.
@@ -307,6 +322,8 @@ class AsyncRolloutsClient:
             - flag_key: str.
 
             - id: str.
+
+            - reference: typing.Optional[str].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
@@ -314,6 +331,7 @@ class AsyncRolloutsClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"api/v1/namespaces/{namespace_key}/flags/{flag_key}/rollouts/{id}",
             ),
+            params=remove_none_from_dict({"reference": reference}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )

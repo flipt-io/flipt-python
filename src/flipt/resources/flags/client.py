@@ -33,6 +33,7 @@ class FlagsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
+        reference: typing.Optional[str] = None,
     ) -> FlagList:
         """
         Parameters:
@@ -43,11 +44,15 @@ class FlagsClient:
             - offset: typing.Optional[int].
 
             - page_token: typing.Optional[str].
+
+            - reference: typing.Optional[str].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags"),
-            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            params=remove_none_from_dict(
+                {"limit": limit, "offset": offset, "pageToken": page_token, "reference": reference}
+            ),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -81,18 +86,21 @@ class FlagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, namespace_key: str, key: str) -> Flag:
+    def get(self, namespace_key: str, key: str, *, reference: typing.Optional[str] = None) -> Flag:
         """
         Parameters:
             - namespace_key: str.
 
             - key: str.
+
+            - reference: typing.Optional[str].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"
             ),
+            params=remove_none_from_dict({"reference": reference}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -165,6 +173,7 @@ class AsyncFlagsClient:
         limit: typing.Optional[int] = None,
         offset: typing.Optional[int] = None,
         page_token: typing.Optional[str] = None,
+        reference: typing.Optional[str] = None,
     ) -> FlagList:
         """
         Parameters:
@@ -175,11 +184,15 @@ class AsyncFlagsClient:
             - offset: typing.Optional[int].
 
             - page_token: typing.Optional[str].
+
+            - reference: typing.Optional[str].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags"),
-            params=remove_none_from_dict({"limit": limit, "offset": offset, "pageToken": page_token}),
+            params=remove_none_from_dict(
+                {"limit": limit, "offset": offset, "pageToken": page_token, "reference": reference}
+            ),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -213,18 +226,21 @@ class AsyncFlagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, namespace_key: str, key: str) -> Flag:
+    async def get(self, namespace_key: str, key: str, *, reference: typing.Optional[str] = None) -> Flag:
         """
         Parameters:
             - namespace_key: str.
 
             - key: str.
+
+            - reference: typing.Optional[str].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"api/v1/namespaces/{namespace_key}/flags/{key}"
             ),
+            params=remove_none_from_dict({"reference": reference}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
