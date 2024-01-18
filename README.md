@@ -1,7 +1,9 @@
-# Flipt Python SDK
+# Flipt Python SDK (Deprecated)
 
-[![pypi](https://img.shields.io/pypi/v/flipt.svg)](https://pypi.org/project/flipt)
-![hardening](https://img.shields.io/badge/status-hardening-orange)
+![deprecated](https://img.shields.io/badge/status-deprecated-red)
+
+> [!WARNING]
+> This SDK is deprecated and will not be maintained going forward. Please use the new [Flipt Server Python SDK](https://github.com/flipt-io/flipt-server-sdks/tree/main/flipt-python) instead.
 
 ## Documentation
 
